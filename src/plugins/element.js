@@ -18,7 +18,8 @@ import {
     Dialog,
     Form,
     FormItem,
-    Divider
+    Divider,
+    Message
 } from 'element-ui'
 
 Vue.use(Button)
@@ -40,3 +41,5 @@ Vue.use(Dialog)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Divider)
+
+Vue.prototype.$message = Message

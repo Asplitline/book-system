@@ -51,7 +51,12 @@
       </el-footer>
     </el-container>
     <!-- 对话框 -->
-    <el-dialog :visible.sync="isLoginDiaglog" width="24%" class="loginDialog">
+    <el-dialog
+      :visible.sync="isLoginDiaglog"
+      width="24%"
+      class="loginDialog"
+      :close-on-click-modal="false"
+    >
       <el-form
         :model="loginForm"
         :rules="loginRules"
@@ -186,7 +191,7 @@ export default {
   // 登录界面
   .loginDialog {
     /deep/ .el-dialog__body {
-      padding: 0 10px 0px;
+      padding: 0 40px 0px;
       .el-form-item {
         margin: 0 10px 20px;
       }
@@ -196,6 +201,7 @@ export default {
       font-weight: normal;
       line-height: 40px;
       margin: 0 0 16px 10px;
+      text-align: center;
     }
   }
 
