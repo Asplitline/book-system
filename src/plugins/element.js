@@ -20,7 +20,10 @@ import {
     FormItem,
     Divider,
     Message,
-    Upload
+    Upload,
+    Tabs,
+    TabPane,
+    Alert
 } from 'element-ui'
 
 Vue.use(Button)
@@ -43,5 +46,8 @@ Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Divider)
 Vue.use(Upload)
+Vue.use(Tabs)
+Vue.use(TabPane)
+Vue.use(Alert)
 
 Vue.prototype.$message = Message

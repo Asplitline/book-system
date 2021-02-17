@@ -145,7 +145,6 @@
 export default {
   data() {
     return {
-      keyWord: null,
       query: {
         keyword: null,
         page: 1,
@@ -280,8 +279,6 @@ export default {
         }
       }
     }
-  }
-  .breif {
   }
 }
 // 书籍报修
