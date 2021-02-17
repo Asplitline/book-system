@@ -44,13 +44,15 @@
               >详情</el-button
             >
             <el-button type="success" size="mini">借取</el-button>
-            <el-button type="warning" size="mini">报修</el-button>
+            <el-button type="warning" size="mini" @click="showBookRepair"
+              >报修</el-button
+            >
           </el-table-column>
         </el-table>
       </el-row>
     </el-card>
     <!-- 对话框 -->
-    <!-- 物品详情 -->
+    <!-- 书籍详情 -->
     <el-dialog :visible.sync="isBookDetailDialog" width="30%" center>
       <div class="detail-container">
         <div class="info">
@@ -84,6 +86,58 @@
         </div>
       </div>
     </el-dialog>
+    <!-- 书籍报修 -->
+    <el-dialog
+      title="新增报修"
+      :visible.sync="isBookRepairDialog"
+      width="30%"
+      @close="handleDialogClose('bookRepairForm')"
+      class="book-repair-dialog"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        :model="bookRepairForm"
+        :rules="bookRepairRules"
+        ref="bookRepairForm"
+      >
+        <el-form-item label="报修原因" prop="description">
+          <el-input
+            v-model="bookRepairForm.description"
+            type="textarea"
+            :autosize="{ minRows: 2, maxRows: 6 }"
+            resize="none"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="图片说明" class="upload">
+          <el-upload
+            ref="upload"
+            action="https://jsonplaceholder.typicode.com/posts/"
+            list-type="picture-card"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :auto-upload="false"
+            :file-list="fileList"
+          >
+            <i class="el-icon-plus"></i>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isBookRepairDialog = false" size="mini"
+          >取 消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="submitRepairInfo('bookRepairForm')"
+          size="mini"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
+    <!-- 报修图片对话框 -->
+    <el-dialog :visible.sync="isRepairImgDialog" width="30%">
+      <img width="100%" :src="repairImageUrl" alt="" />
+    </el-dialog>
   </div>
 </template>
 
@@ -99,7 +153,18 @@ export default {
       },
       total: 0,
       borrowList: [],
-      isBookDetailDialog: false
+      isBookDetailDialog: false,
+      isBookRepairDialog: false,
+      bookRepairForm: {},
+      bookRepairRules: {
+        description: [
+          { required: true, message: '请输入报修信息', trigger: 'blur' },
+          { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
+        ]
+      },
+      isRepairImgDialog: false,
+      repairImageUrl: '',
+      fileList: []
     }
   },
   methods: {
@@ -124,6 +189,32 @@ export default {
     // 显示图书详情
     showBookDetail() {
       this.isBookDetailDialog = true
+    },
+    // 显示图书维修
+    showBookRepair() {
+      this.isBookRepairDialog = true
+    },
+    // 清空对话框
+    handleDialogClose(formName) {
+      this.$refs[formName].resetFields()
+      this.$refs.upload.clearFiles()
+    },
+    // 显示报修图片
+    handlePictureCardPreview(file) {
+      this.repairImageUrl = file.url
+      this.isRepairImgDialog = true
+    },
+    // 移除报修图片
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    // 提交信息
+    submitRepairInfo(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (!valid) return
+        // this.$refs.upload.submit()
+        console.log(this.bookRepairForm)
+      })
     }
   },
   created() {
@@ -152,14 +243,12 @@ export default {
     }
   }
 }
-
 // 表格
 .bottomTable {
   border-radius: 6px;
   overflow: hidden;
   box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.2);
 }
-
 // 书籍详情
 .detail-container {
   .info {
@@ -192,22 +281,35 @@ export default {
       }
     }
   }
-
   .breif {
   }
 }
-// 物品详情
-
-//
-// {
-//   "bm": "12",
-//   "name": "阿加莎·克里斯蒂自传",
-//   "lx": "文学",
-//   "author": "[英国]阿加莎·克里斯蒂",
-//   "createTime": "2021-02-16T07:19:23.273Z",
-//   "description": "string",
-//   "id": "string",
-//   "number": 0,
-//   "updateTime": "2021-02-16T07:19:23.273Z"
-// }
+// 书籍报修
+.book-repair-dialog {
+  /deep/.el-dialog__body {
+    padding: 10px 20px;
+  }
+  /deep/.el-upload--picture-card {
+    width: 100px;
+    height: 100px;
+    line-height: 97px;
+    i {
+      font-size: 16px;
+    }
+  }
+  .upload {
+    /deep/.el-form-item__label {
+      text-align: left;
+      width: 100%;
+    }
+    /deep/.el-upload-list--picture-card {
+      .el-upload-list__item-actions,
+      .el-upload-list__item-thumbnail,
+      .el-upload-list__item {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  }
+}
 </style>
