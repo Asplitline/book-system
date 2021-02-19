@@ -23,7 +23,15 @@ import {
     Upload,
     Tabs,
     TabPane,
-    Alert
+    Alert,
+    Submenu,
+    Breadcrumb,
+    BreadcrumbItem,
+    Tooltip,
+    Radio,
+    Option,
+    Select,
+    RadioGroup
 } from 'element-ui'
 
 Vue.use(Button)
@@ -49,5 +57,13 @@ Vue.use(Upload)
 Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Alert)
+Vue.use(Submenu)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Tooltip)
+Vue.use(Radio)
+Vue.use(Option)
+Vue.use(Select)
+Vue.use(RadioGroup)
 
 Vue.prototype.$message = Message
