@@ -31,7 +31,10 @@ import {
     Radio,
     Option,
     Select,
-    RadioGroup
+    RadioGroup,
+    Tag,
+    Popconfirm,
+    MessageBox
 } from 'element-ui'
 
 Vue.use(Button)
@@ -65,5 +68,8 @@ Vue.use(Radio)
 Vue.use(Option)
 Vue.use(Select)
 Vue.use(RadioGroup)
+Vue.use(Tag)
+Vue.use(Popconfirm)
 
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox.confirm
