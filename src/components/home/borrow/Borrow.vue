@@ -13,7 +13,7 @@
             <el-button
               slot="append"
               icon="el-icon-search"
-              @click="getBooks"
+              @click="getBooks()"
             ></el-button>
           </el-input>
         </el-col>
@@ -29,7 +29,7 @@
       <!-- 列表表格 -->
       <el-row class="bottomTable">
         <el-table :data="borrowList" style="width: 100%">
-          <el-table-column prop="bm" label="书籍编号" min-width="100">
+          <el-table-column prop="bm" label="书籍编号" min-width="80">
           </el-table-column>
           <el-table-column prop="name" label="书籍名称" min-width="160">
           </el-table-column>
@@ -37,23 +37,40 @@
           </el-table-column>
           <el-table-column prop="number" label="书籍数量" min-width="80">
           </el-table-column>
-          <el-table-column prop="description" label="书籍描述" min-width="200">
+          <el-table-column
+            prop="description"
+            label="书籍描述"
+            min-width="240"
+            class="desc"
+          >
+            <template v-slot="{ row }">
+              {{ row.description === 'string' ? '暂无描述' : row.description }}
+            </template>
           </el-table-column>
           <el-table-column label="操作" min-width="200">
-            <el-button type="primary" size="mini" @click="showBookDetail"
-              >详情</el-button
-            >
-            <el-button type="success" size="mini">借取</el-button>
-            <el-button type="warning" size="mini" @click="showBookRepair"
-              >报修</el-button
-            >
+            <template v-slot="{ row }">
+              <el-button type="primary" size="mini" @click="showBookDetail(row)"
+                >详情</el-button
+              >
+              <el-button
+                type="success"
+                size="mini"
+                @click="requestBorrow(row)"
+                :disabled="getStateById(row.id) >= 0"
+                >借取</el-button
+              >
+
+              <el-button type="warning" size="mini" @click="showBookRepair(row)"
+                >报修</el-button
+              >
+            </template>
           </el-table-column>
         </el-table>
       </el-row>
     </el-card>
     <!-- 对话框 -->
     <!-- 书籍详情 -->
-    <el-dialog :visible.sync="isBookDetailDialog" width="30%" center>
+    <el-dialog :visible.sync="isBookDetailDialog" width="36%" center>
       <div class="detail-container">
         <div class="info">
           <img
@@ -64,23 +81,33 @@
             class="cover"
           />
           <div class="content">
-            <p><i class="icon-slack iconfont"></i>编号:<span>1</span></p>
             <p>
-              <i class="icon-tag-fill iconfont"></i>名称:<span
-                >凯尔特人之梦</span
-              >
+              <i class="icon-slack iconfont"></i>编号:<span>{{
+                currentBook.bm
+              }}</span>
             </p>
-            <p><i class="el-icon-s-flag"></i>类型:<span>文学</span></p>
             <p>
-              <i class="el-icon-s-custom"></i>作者:<span
-                >[秘鲁]马里奥·巴尔加斯·略萨</span
-              >
+              <i class="icon-tag-fill iconfont"></i>名称:<span>{{
+                currentBook.name
+              }}</span>
+            </p>
+            <p>
+              <i class="el-icon-s-flag"></i>类型:<span>{{
+                currentBook.lx
+              }}</span>
+            </p>
+            <p>
+              <i class="el-icon-s-custom"></i>作者:<span>{{
+                currentBook.author
+              }}</span>
             </p>
             <p class="breif">
               <i class="el-icon-s-promotion"></i>简介<br />
-              <span
-                >全书由十二封信的形式组成。除作为“附言”的末信外，第一二封信谈的都是些“大道理”，第三至第十一封信则具体探讨（长篇）小说的语言、风格、空间、时间、视角等等叙事形式和技巧问题。从纯粹实用的角度来看，写作者主要关心的恐怕都会是后者涉及的那些具体问题
-              </span>
+              <span>{{
+                currentBook.description === 'string'
+                  ? '暂无简介'
+                  : currentBook.description
+              }}</span>
             </p>
           </div>
         </div>
@@ -108,17 +135,20 @@
             resize="none"
           ></el-input>
         </el-form-item>
-        <el-form-item label="图片说明" class="upload">
+        <el-form-item label="图片说明" prop="imageUrl">
           <el-upload
-            ref="upload"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            list-type="picture-card"
-            :on-preview="handlePictureCardPreview"
-            :on-remove="handleRemove"
-            :auto-upload="false"
-            :file-list="fileList"
+            class="avatar-uploader"
+            :action="bindImg('util/uploadfile')"
+            :show-file-list="false"
+            :on-success="handleAddAvatarSuccess"
+            name="files"
           >
-            <i class="el-icon-plus"></i>
+            <img
+              v-if="bookRepairForm.imageUrl"
+              :src="bookRepairForm.imageUrl"
+              class="avatar"
+            />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
       </el-form>
@@ -163,7 +193,10 @@ export default {
       },
       isRepairImgDialog: false,
       repairImageUrl: '',
-      fileList: []
+      fileList: [],
+      currentBook: {},
+      borrowInfo: {},
+      borrowStatus: {}
     }
   },
   methods: {
@@ -186,38 +219,100 @@ export default {
       this.getBooks()
     },
     // 显示图书详情
-    showBookDetail() {
+    showBookDetail(data) {
       this.isBookDetailDialog = true
+      this.currentBook = data
     },
-    // 显示图书维修
-    showBookRepair() {
+    // 显示图书报修
+    showBookRepair(data) {
       this.isBookRepairDialog = true
+      this.currentBook = data
     },
     // 清空对话框
     handleDialogClose(formName) {
       this.$refs[formName].resetFields()
-      this.$refs.upload.clearFiles()
-    },
-    // 显示报修图片
-    handlePictureCardPreview(file) {
-      this.repairImageUrl = file.url
-      this.isRepairImgDialog = true
-    },
-    // 移除报修图片
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
     },
     // 提交信息
     submitRepairInfo(formName) {
-      this.$refs[formName].validate((valid) => {
+      const current = this.isLoginAndGetCommonInfo()
+      if (current === null) {
+        return
+      }
+      this.$refs[formName].validate(async (valid) => {
         if (!valid) return
         // this.$refs.upload.submit()
-        console.log(this.bookRepairForm)
+        Object.assign(this.bookRepairForm, current)
+        const { status, data } = await this.$http.post(
+          '/repair/insert',
+          this.bookRepairForm
+        )
+        if (status === 200) {
+          if (data.success) {
+            this.$message.success('报修成功，等待审核')
+            this.isBookRepairDialog = false
+          } else {
+            this.$message.warning('报修失败')
+          }
+        } else {
+          this.$message.warning('请求失败')
+        }
       })
+    },
+    // 获取借阅列表
+    async handleBorrowStatus() {
+      const { data } = await this.$http.get('/borrow/list')
+      this.borrowStatus = data
+    },
+    // 处理借阅表单
+    getStateById(bid) {
+      const item = this.borrowStatus.find((item) => item.bookId === bid)
+      return item && item.state
+    },
+    // 申请借阅
+    async requestBorrow(formData) {
+      this.currentBook = formData
+      const current = this.isLoginAndGetCommonInfo()
+      if (current === null) {
+        return
+      }
+      const { data, status } = await this.$http.post('/borrow/insert', current)
+      if (status === 200) {
+        if (data.success) {
+          this.handleBorrowStatus()
+          this.$message.success('申请借阅成功，等待审核')
+        } else {
+          this.$message.error('申请借阅失败')
+        }
+      } else {
+        this.$message.warning('请求失败')
+      }
+    },
+    // 图片上传后回显
+    handleAddAvatarSuccess(res, file) {
+      this.$set(this.bookRepairForm, 'imageUrl', URL.createObjectURL(file.raw))
+    },
+    // 登录判断并获取公共信息
+    isLoginAndGetCommonInfo() {
+      const currentUr = this.$store.state.user
+      const currentBk = this.currentBook
+      if (currentUr === null) {
+        this.$message.error('请先登录')
+        return null
+      } else {
+        return {
+          userId: currentUr.id,
+          username: currentUr.username,
+          bookId: currentBk.id,
+          bookName: currentBk.name,
+          id: '',
+          state: 0
+        }
+      }
     }
   },
   created() {
     this.getBooks()
+    this.handleBorrowStatus()
   }
 }
 </script>
@@ -245,8 +340,13 @@ export default {
 // 表格
 .bottomTable {
   border-radius: 6px;
-  overflow: hidden;
+  // overflow: hidden;
   box-shadow: 1px 1px 6px 1px rgba(0, 0, 0, 0.2);
+  /deep/.el-table__row td:nth-child(5) .cell {
+    overflow: hidden;
+    white-space: nowrap; /* 设置文本不换行，单行显示 */
+    text-overflow: ellipsis; /* 超出的文本使用省略号代替 */
+  }
 }
 // 书籍详情
 .detail-container {
@@ -294,18 +394,29 @@ export default {
       font-size: 16px;
     }
   }
-  .upload {
-    /deep/.el-form-item__label {
-      text-align: left;
+}
+.borrow {
+  /deep/.el-upload {
+    position: relative;
+    border: 2px dashed rgba(0, 0, 0, 0.1);
+    line-height: 0;
+    border-radius: 2px;
+    width: 120px;
+    height: 120px;
+    img {
       width: 100%;
+      height: 100%;
+      box-shadow: 0px 1px 2px 1px rgba(0 0 0 / 0.2);
     }
-    /deep/.el-upload-list--picture-card {
-      .el-upload-list__item-actions,
-      .el-upload-list__item-thumbnail,
-      .el-upload-list__item {
-        width: 100px;
-        height: 100px;
-      }
+    &:hover {
+      border: 2px dashed #ff525278;
+    }
+    i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
     }
   }
 }

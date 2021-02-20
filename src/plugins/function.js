@@ -19,3 +19,19 @@ Vue.prototype.toURL = function (obj) {
 Vue.prototype.convertDeepCopy = function (data) {
     return JSON.parse(JSON.stringify(data))
 }
+// 时间格式化
+Vue.filter('formatDate', date => {
+    date = new Date(date)
+    const year = date.getFullYear()
+    const month = pad0(date.getMonth() + 1)
+    const day = pad0(date.getDate())
+    const hour = pad0(date.getHours())
+    const minute = pad0(date.getMinutes())
+    const second = pad0(date.getSeconds())
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`
+})
+
+// 补0
+function pad0 (data, len = 2) {
+    return ('00000000000' + data).substr(-len)
+}

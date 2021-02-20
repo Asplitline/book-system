@@ -52,7 +52,11 @@ const routes = [
       { path: '/_repair', name: 'aRepair', component: aRepair },
       { path: '/_suggest', name: 'aSuggest', component: aSuggest },
       { path: '/_user', name: 'aUser', component: aUser }
-    ]
+    ],
+    beforeEnter: (to, from, next) => {
+      if (sessionStorage.getItem('userInfo')) next()
+      else next('/login')
+    }
   }
 ]
 
@@ -60,4 +64,8 @@ const router = new VueRouter({
   routes
 })
 
+// router.beforeEach((to, from, next) => {
+//   console.log(to, from)
+//   next()
+// })
 export default router

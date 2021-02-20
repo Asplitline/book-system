@@ -137,6 +137,9 @@ export default {
     }
   },
   methods: {
+    // async getBorrow(){
+    //   await this.
+    // },
     showBorrow() {
       this.isBorrowDialog = true
     },

@@ -36,7 +36,7 @@
             <a href="javascript:;" v-if="isLogin" @click="showLoginDialog"
               >登录</a
             >
-            <a href="javascript:;" v-else>注销</a>
+            <a href="javascript:;" v-else @click="logOut">注销</a>
           </div>
         </el-menu>
       </el-header>
@@ -56,6 +56,7 @@
       width="24%"
       class="loginDialog"
       :close-on-click-modal="false"
+      @close="clearDialog('loginForm')"
     >
       <el-form
         :model="loginForm"
@@ -82,7 +83,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isLoginDiaglog = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="isLoginDiaglog = false" size="mini"
+        <el-button type="primary" @click="verifyLogin()" size="mini"
           >登 录</el-button
         >
       </span>
@@ -92,23 +93,83 @@
 
 <script>
 // @ is an alias to /src
-
+import { mapMutations } from 'vuex'
 export default {
   name: 'Home',
   data() {
     return {
       activeIndex: '/index',
-      isLogin: true,
       isLoginDiaglog: false,
       loginForm: {},
-      loginRules: [{}]
+      loginRules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
+        ],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+      },
+      isLogin: false
     }
   },
   methods: {
+    ...mapMutations(['initUser']),
     // 显示登录界面
     showLoginDialog() {
-      this.isLoginDiaglog = true
+      const user = sessionStorage.getItem('userInfo')
+      if (user) {
+        this.$message.warning('用户已登录')
+      } else {
+        this.isLoginDiaglog = true
+      }
+    },
+    // 登录验证
+    async verifyLogin() {
+      const pwdURL = this.toURL(this.loginForm)
+      const { status, data } = await this.$http.post(
+        '/account/api/login',
+        pwdURL
+      )
+      if (status === 200) {
+        if (data.success) {
+          this.$message.success('登录成功')
+          this.isLoginDiaglog = false
+          this.initUser(data.data)
+          this.getLoginStatus()
+        }
+      } else {
+        this.$message.warning('请求失败')
+      }
+    },
+    // 注销
+    logOut() {
+      this.$confirm('此操作将退出当前账号, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error',
+        center: true
+      })
+        .then(async () => {
+          sessionStorage.clear('userInfo')
+          this.getLoginStatus()
+          this.$message.success('注销成功')
+        })
+        .catch(() => {
+          this.$message.info('已取消')
+        })
+    },
+    // 获取当前登录状态
+    getLoginStatus() {
+      this.$store.commit(
+        'initLoginStatus',
+        sessionStorage.getItem('userInfo') === null
+      )
+      this.isLogin = this.$store.state.isLogin
+    },
+    clearDialog(formName) {
+      this.$refs[formName].resetFields()
     }
+  },
+  created() {
+    this.getLoginStatus()
   }
 }
 </script>

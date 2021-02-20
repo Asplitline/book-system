@@ -13,32 +13,33 @@
     <el-row class="mixInp" :gutter="20">
       <el-col :span="6">
         <el-input
-          placeholder="请输入内容"
+          placeholder="请输入用户账号"
           v-model="query.keyword"
           class="input-with-select"
           clearable
           @clear="getUsers()"
           size="small"
         >
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="getUsers()"
+          ></el-button>
         </el-input>
       </el-col>
       <el-col :span="4">
-        <el-button type="success" size="small" @click="showUserDialog" plain>
+        <el-button
+          type="success"
+          size="small"
+          @click="showAddUserDialog()"
+          plain
+        >
           添加用户</el-button
         >
       </el-col>
     </el-row>
     <!-- 用户表单 -->
     <el-table :data="userList" stripe style="width: 100%" max-height="600">
-      <!-- <el-table-column prop="name" label="头像" min-width="100">
-        <img
-          :src="bindUrl('T_2014_364_OVERLORD_II.jpg')"
-          alt=""
-          width="50"
-          height="50"
-        />
-      </el-table-column> -->
       <el-table-column prop="username" label="账号" min-width="100">
       </el-table-column>
       <el-table-column prop="name" label="昵称" min-width="120">
@@ -68,7 +69,7 @@
               type="primary"
               icon="el-icon-edit"
               size="small"
-              @click="showUserDialog(row)"
+              @click="showEditUserDialog(row)"
             ></el-button>
           </el-tooltip>
           <el-tooltip
@@ -115,15 +116,15 @@
     </el-pagination>
     <!-- 添加用户 -->
     <el-dialog
-      :visible.sync="isUserDialog"
+      :visible.sync="isAddUserDialog"
       width="25%"
       :close-on-click-modal="false"
-      @close="clearDialog"
+      @close="clearDialog('addUserForm')"
     >
       <el-form
-        :model="userInfoForm"
+        :model="addUserForm"
         :rules="userInfoRules"
-        ref="userInfoForm"
+        ref="addUserForm"
         label-width="100px"
         size="mini"
         class="user-form"
@@ -131,28 +132,28 @@
       >
         <el-form-item prop="username">
           <span slot="label"><i class="icon-user iconfont"></i>账号</span>
-          <el-input v-model="userInfoForm.username"></el-input>
+          <el-input v-model="addUserForm.username"></el-input>
         </el-form-item>
         <el-form-item prop="name">
           <span slot="label"><i class="icon-contacts iconfont"></i>姓名</span>
-          <el-input v-model="userInfoForm.name"></el-input>
+          <el-input v-model="addUserForm.name"></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <span slot="label"><i class="icon-lock iconfont"></i>密码</span>
-          <el-input v-model="userInfoForm.password" type="password"></el-input>
+          <el-input v-model="addUserForm.password" type="password"></el-input>
         </el-form-item>
         <el-form-item prop="level">
           <span slot="label"><i class="icon-idcard iconfont"></i>身份</span>
-          <el-radio v-model="userInfoForm.level" label="0">普通</el-radio>
-          <el-radio v-model="userInfoForm.level" label="1">管理员</el-radio>
+          <el-radio v-model="addUserForm.level" label="0">普通</el-radio>
+          <el-radio v-model="addUserForm.level" label="1">管理员</el-radio>
         </el-form-item>
         <el-form-item prop="phone">
           <span slot="label"><i class="icon-mobile iconfont"></i>手机号码</span>
-          <el-input v-model="userInfoForm.phone"></el-input>
+          <el-input v-model="addUserForm.phone"></el-input>
         </el-form-item>
         <el-form-item prop="email">
           <span slot="label"><i class="icon-mail iconfont"></i>邮箱</span>
-          <el-input v-model="userInfoForm.email"></el-input>
+          <el-input v-model="addUserForm.email"></el-input>
         </el-form-item>
         <el-form-item prop="imgUrl">
           <span slot="label"><i class="icon-camera1 iconfont"></i>头像</span>
@@ -160,12 +161,12 @@
             class="avatar-uploader"
             :action="bindImg('util/uploadfile')"
             :show-file-list="false"
-            :on-success="handleAvatarSuccess"
+            :on-success="handleAddAvatarSuccess"
             name="files"
           >
             <img
-              v-if="userInfoForm.imgUrl"
-              :src="userInfoForm.imgUrl"
+              v-if="addUserForm.imgUrl"
+              :src="addUserForm.imgUrl"
               class="avatar"
               ref="preview"
             />
@@ -175,7 +176,7 @@
         <el-form-item prop="description">
           <span slot="label"><i class="icon-bulb iconfont"></i>自我描述</span>
           <el-input
-            v-model="userInfoForm.description"
+            v-model="addUserForm.description"
             type="textarea"
             :autosize="{ minRows: 3, maxRows: 6 }"
             resize="none"
@@ -183,12 +184,91 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isUserDialog = false" size="small">取 消</el-button>
+        <el-button @click="isAddUserDialog = false" size="small"
+          >取 消</el-button
+        >
         <el-button
           type="primary"
-          @click="submitUserForm('userInfoForm')"
+          @click="submitUserForm('addUserForm')"
           size="small"
-          >确 定</el-button
+          >添 加</el-button
+        >
+      </span>
+    </el-dialog>
+    <!-- 修改用户 -->
+    <el-dialog
+      :visible.sync="isEditUserDialog"
+      width="25%"
+      :close-on-click-modal="false"
+      @close="clearDialog('editUserForm')"
+    >
+      <el-form
+        :model="editUserForm"
+        :rules="userInfoRules"
+        ref="editUserForm"
+        label-width="100px"
+        size="mini"
+        class="user-form"
+        hide-required-asterisk
+      >
+        <el-form-item prop="username">
+          <span slot="label"><i class="icon-user iconfont"></i>账号</span>
+          <el-input v-model="editUserForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item prop="name">
+          <span slot="label"><i class="icon-contacts iconfont"></i>姓名</span>
+          <el-input v-model="editUserForm.name"></el-input>
+        </el-form-item>
+        <el-form-item prop="level">
+          <span slot="label"><i class="icon-idcard iconfont"></i>身份</span>
+          <el-radio v-model="editUserForm.level" :label="0">普通</el-radio>
+          <el-radio v-model="editUserForm.level" :label="1">管理员</el-radio>
+        </el-form-item>
+        <el-form-item prop="phone">
+          <span slot="label"><i class="icon-mobile iconfont"></i>手机号码</span>
+          <el-input v-model="editUserForm.phone"></el-input>
+        </el-form-item>
+        <el-form-item prop="email">
+          <span slot="label"><i class="icon-mail iconfont"></i>邮箱</span>
+          <el-input v-model="editUserForm.email"></el-input>
+        </el-form-item>
+        <el-form-item prop="imgUrl">
+          <span slot="label"><i class="icon-camera1 iconfont"></i>头像</span>
+          <el-upload
+            class="avatar-uploader"
+            :action="bindImg('util/uploadfile')"
+            :show-file-list="false"
+            :on-success="handleEditAvatarSuccess"
+            name="files"
+          >
+            <img
+              v-if="editUserForm.imgUrl"
+              :src="editUserForm.imgUrl"
+              class="avatar"
+              ref="preview"
+            />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+        <el-form-item prop="description">
+          <span slot="label"><i class="icon-bulb iconfont"></i>自我描述</span>
+          <el-input
+            v-model="editUserForm.description"
+            type="textarea"
+            :autosize="{ minRows: 3, maxRows: 6 }"
+            resize="none"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isEditUserDialog = false" size="small"
+          >取 消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="submitUserForm('editUserForm')"
+          size="small"
+          >修 改</el-button
         >
       </span>
     </el-dialog>
@@ -197,6 +277,8 @@
 
 <script>
 const DEFAULT_PASSWORD = 123456
+const ADD = 0
+const EDIT = 1
 export default {
   data() {
     // 验证邮箱
@@ -219,7 +301,10 @@ export default {
         keyword: null
       },
       total: 10,
-      userInfoForm: {
+      addUserForm: {
+        imgUrl: ''
+      },
+      editUserForm: {
         imgUrl: ''
       },
       userInfoRules: {
@@ -246,16 +331,18 @@ export default {
         ],
         imgUrl: [{ required: true, message: '选择头像', trigger: 'blur' }]
       },
-      isUserDialog: false
+      isAddUserDialog: false,
+      isEditUserDialog: false
+
+      // imgUrl: ''
     }
   },
   methods: {
     // 获取用户列表
     async getUsers() {
-      const { data, status } = await this.$http.get(
-        '/user/pageUser',
-        this.query
-      )
+      const { data, status } = await this.$http.get('/user/pageUser', {
+        params: this.query
+      })
       if (status === 200) {
         const { list, total } = data
         this.userList = list
@@ -264,14 +351,23 @@ export default {
         this.$message.warning('请求失败')
       }
     },
-    // 显示用户对话框
-    showUserDialog(data) {
-      this.isUserDialog = true
-      if (data) {
-        this.userInfoForm = this.convertDeepCopy(data)
-      } else {
-        this.userInfoForm = { imgUrl: '' }
-      }
+    // 显示添加用户对话框
+    showAddUserDialog() {
+      this.isAddUserDialog = true
+    },
+    // 显示修改用户对话框
+    async showEditUserDialog(data) {
+      this.isEditUserDialog = true
+      this.editUserForm = this.convertDeepCopy(data)
+      // 动态添加的属性非响应式的，用set使其变为响应式
+      this.$set(this.editUserForm, 'imgUrl', '')
+    },
+    // 根据id查找图片
+    async findImgById(id) {
+      const res = await this.$http.get('/util/getFilesByUserId', {
+        params: id
+      })
+      return res.data || null
     },
     // 最大页改变
     handleSizeChange(size) {
@@ -285,30 +381,53 @@ export default {
       this.getUsers()
     },
     // 图片预览
-    handleAvatarSuccess(res, file) {
-      this.userInfoForm.imgUrl = URL.createObjectURL(file.raw)
-      this.userInfoForm.id = res
+    handleAddAvatarSuccess(res, file) {
+      this.addUserForm.imgUrl = URL.createObjectURL(file.raw)
+      this.addUserForm.id = res
     },
-    // 添加用户
+    handleEditAvatarSuccess(res, file) {
+      this.editUserForm.imgUrl = URL.createObjectURL(file.raw)
+    },
+    // 提交用户表单
     submitUserForm(formName) {
-      this.$refs[formName].validate(async (valid) => {
+      this.$refs[formName].validate((valid) => {
         if (!valid) return
-        const { data, status } = await this.$http.post(
-          '/user/insert',
-          this.userInfoForm
-        )
+        if (formName === 'addUserForm') {
+          this.handleUserForm(this.addUserForm, '/user/insert', ADD)
+        } else {
+          this.handleUserForm(this.editUserForm, '/user/updateIgnoreNull', EDIT)
+        }
+      })
+    },
+    // 处理用户表单
+    async handleUserForm(formData, url, flag) {
+      // formData = this.convertDeepCopy(formData)
+      if (flag === ADD) {
+        const { data, status } = await this.$http.post(url, formData)
         if (status === 200) {
           if (data.success) {
             this.$message.success('添加成功')
-            this.getUsers()
-            this.isUserDialog = false
+            this.isAddUserDialog = false
           } else {
             this.$message.error('添加失败')
           }
         } else {
           this.$message.warning('请求失败')
         }
-      })
+      } else if (flag === EDIT) {
+        const { data, status } = await this.$http.put(url, formData)
+        if (status === 200) {
+          if (data.success) {
+            this.$message.success('修改成功')
+            this.isEditUserDialog = false
+          } else {
+            this.$message.error('修改失败')
+          }
+        } else {
+          this.$message.warning('请求失败')
+        }
+      }
+      this.getUsers()
     },
     // 删除用户
     deleteUser(id) {
@@ -348,11 +467,13 @@ export default {
         center: true
       })
         .then(async () => {
-          const { data, status } = await this.$http.put(
-            '/user/updateIgnoreNull',
+          const { data, status } = await this.$http.get(
+            '/user/changePassword',
             {
-              id,
-              password: DEFAULT_PASSWORD
+              params: {
+                id,
+                password: DEFAULT_PASSWORD
+              }
             }
           )
           if (status === 200) {
@@ -371,8 +492,8 @@ export default {
         })
     },
     // 清空表单
-    clearDialog() {
-      this.$refs.userInfoForm.resetFields()
+    clearDialog(formName) {
+      this.$refs[formName].resetFields()
     }
   },
   created() {

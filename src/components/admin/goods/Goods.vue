@@ -20,67 +20,80 @@
           @clear="getBooks()"
           size="small"
         >
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="getBooks()"
+          ></el-button>
         </el-input>
       </el-col>
       <el-col :span="4">
-        <el-button type="success" size="small" @click="showBookDialog" plain>
+        <el-button
+          type="success"
+          size="small"
+          @click="showAddBookDialog()"
+          plain
+        >
           添加书籍</el-button
         >
       </el-col>
     </el-row>
     <!-- 用户表单 -->
     <el-table :data="bookList" stripe style="width: 100%" max-height="600">
-      <el-table-column prop="name" label="书籍编号" min-width="100">
+      <el-table-column prop="bm" label="书籍编号" min-width="50">
       </el-table-column>
-      <el-table-column prop="username" label="书名" min-width="120">
+      <el-table-column prop="name" label="书名" min-width="150">
       </el-table-column>
-      <el-table-column prop="qq" label="书籍类型" min-width="120">
+      <el-table-column prop="lx" label="书籍类型" min-width="150">
       </el-table-column>
-      <el-table-column prop="qq" label="数量" min-width="120">
+      <el-table-column prop="author" label="作者" min-width="150">
       </el-table-column>
-      <el-table-column prop="qq" label="简介" min-width="120">
+      <el-table-column prop="number" label="数量" min-width="50">
       </el-table-column>
       <el-table-column label="操作" min-width="150">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="修改书籍"
-          placement="top"
-          :enterable="false"
-        >
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            size="small"
-          ></el-button>
-        </el-tooltip>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="删除书籍"
-          placement="top"
-          :enterable="false"
-        >
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="small"
-          ></el-button>
-        </el-tooltip>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="书籍详情"
-          placement="top"
-          :enterable="false"
-        >
-          <el-button
-            type="warning"
-            icon="el-icon-tickets"
-            size="small"
-          ></el-button>
-        </el-tooltip>
+        <template v-slot="{ row }">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="修改书籍"
+            placement="top"
+            :enterable="false"
+          >
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="showEditBookDialog(row)"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="删除书籍"
+            placement="top"
+            :enterable="false"
+          >
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="deleteBookById(row.id)"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="书籍详情"
+            placement="top"
+            :enterable="false"
+          >
+            <el-button
+              type="warning"
+              icon="el-icon-tickets"
+              size="small"
+            ></el-button>
+          </el-tooltip>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -94,42 +107,63 @@
       :total="total"
     >
     </el-pagination>
-    <!-- 书籍对话框 -->
-    <el-dialog :visible.sync="isBookDialog" width="25%" class="book-dialog">
-      <el-form :model="bookForm" :rules="bookRules" ref="bookForm" size="mini">
+    <!-- 添加书籍对话框 -->
+    <el-dialog
+      :visible.sync="isAddBookDialog"
+      width="25%"
+      class="book-dialog"
+      @close="clearDialog('addBookForm')"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        :model="addBookForm"
+        :rules="bookRules"
+        ref="addBookForm"
+        size="mini"
+        :hide-required-asterisk="true"
+      >
         <el-form-item label="书名" prop="name">
-          <el-input v-model="bookForm.name"></el-input>
+          <el-input v-model="addBookForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="编号" prop="name">
-          <el-input v-model="bookForm.name"></el-input>
+        <el-form-item label="编号" prop="bm">
+          <el-input v-model="addBookForm.bm"></el-input>
         </el-form-item>
-        <el-form-item label="数量" prop="name">
-          <el-input v-model="bookForm.name" type="number"></el-input>
+        <el-form-item label="作者" prop="author">
+          <el-input v-model="addBookForm.author"></el-input>
         </el-form-item>
-        <el-form-item label="分类" prop="name">
-          <el-select v-model="value" placeholder="请选择">
+        <el-form-item label="数量" prop="number">
+          <el-input v-model="addBookForm.number" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="分类" prop="lx">
+          <el-select v-model="addBookForm.lx" placeholder="请选择">
             <el-option
               v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item"
+              :label="item"
+              :value="item"
             >
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="简介" prop="name">
+        <el-form-item label="简介" prop="description">
           <el-input
-            v-model="bookForm.name"
+            v-model="addBookForm.description"
             type="textarea"
             resize="none"
             :autosize="{ minRows: 2, maxRows: 6 }"
           ></el-input>
         </el-form-item>
-        <el-form-item label="封面" prop="name">
-          <el-upload class="avatar-uploader" action="#" :show-file-list="false">
+        <el-form-item label="封面" prop="imageUrl">
+          <el-upload
+            class="avatar-uploader"
+            :action="bindImg('util/uploadfile')"
+            :show-file-list="false"
+            :on-success="handleAddAvatarSuccess"
+            name="files"
+          >
             <img
-              v-if="bookForm.imageUrl"
-              :src="bookForm.imageUrl"
+              v-if="addBookForm.imageUrl"
+              :src="addBookForm.imageUrl"
               class="avatar"
             />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -137,9 +171,89 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isBookDialog = false" size="small">取 消</el-button>
-        <el-button type="primary" @click="isBookDialog = false" size="small"
-          >确 定</el-button
+        <el-button @click="isAddBookDialog = false" size="small"
+          >取 消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="submitBookForm('addBookForm')"
+          size="small"
+          >添 加</el-button
+        >
+      </span>
+    </el-dialog>
+    <!-- 修改书籍对话框 -->
+    <el-dialog
+      :visible.sync="isEditBookDialog"
+      width="25%"
+      class="book-dialog"
+      @close="clearDialog('editBookForm')"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        :model="editBookForm"
+        :rules="bookRules"
+        ref="editBookForm"
+        size="mini"
+        :hide-required-asterisk="true"
+      >
+        <el-form-item label="书名" prop="name">
+          <el-input v-model="editBookForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="编号" prop="bm">
+          <el-input v-model="editBookForm.bm"></el-input>
+        </el-form-item>
+        <el-form-item label="作者" prop="author">
+          <el-input v-model="editBookForm.author"></el-input>
+        </el-form-item>
+        <el-form-item label="数量" prop="numebr">
+          <el-input v-model="editBookForm.number" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="分类" prop="lx">
+          <el-select v-model="editBookForm.lx" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item"
+              :label="item"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="简介" prop="description">
+          <el-input
+            v-model="editBookForm.description"
+            type="textarea"
+            resize="none"
+            :autosize="{ minRows: 2, maxRows: 6 }"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="封面" prop="imageUrl">
+          <el-upload
+            class="avatar-uploader"
+            :action="bindImg('util/uploadfile')"
+            :show-file-list="false"
+            :on-success="handleEditAvatarSuccess"
+            name="files"
+          >
+            <img
+              v-if="editBookForm.imageUrl"
+              :src="editBookForm.imageUrl"
+              class="avatar"
+            />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isEditBookDialog = false" size="small"
+          >取 消</el-button
+        >
+        <el-button
+          type="primary"
+          @click="submitBookForm('editBookForm')"
+          size="small"
+          >修 改</el-button
         >
       </span>
     </el-dialog>
@@ -147,51 +261,185 @@
 </template>
 
 <script>
+const ADD = 0
+const EDIT = 1
 export default {
   data() {
     return {
-      bookList: [{}],
+      bookList: [],
       query: {
         page: 1, // 当前页
         size: 10, // 最大页数
         keyword: null
       },
       total: 10,
-      bookForm: {},
-      bookRules: {},
-      isBookDialog: false,
+      addBookForm: {},
+      editBookForm: {},
+      bookRules: {
+        bm: [{ required: true, message: '输入书籍编号', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入书名', trigger: 'blur' }],
+        lx: [{ required: true, message: '请选择书籍分类', trigger: 'blur' }],
+        author: [
+          { required: true, message: '请输入书籍作者', trigger: 'blur' }
+        ],
+        number: [
+          {
+            required: true,
+            message: '请输入书籍数量',
+            trigger: 'blur'
+          }
+        ],
+        imageUrl: [
+          { required: true, message: '请选择书籍封面', trigger: 'blur' }
+        ]
+      },
+      isAddBookDialog: false,
+      isEditBookDialog: false,
       // example
       options: [
-        {
-          value: '选项1',
-          label: '黄金糕'
-        },
-        {
-          value: '选项2',
-          label: '双皮奶'
-        },
-        {
-          value: '选项3',
-          label: '蚵仔煎'
-        },
-        {
-          value: '选项4',
-          label: '龙须面'
-        },
-        {
-          value: '选项5',
-          label: '北京烤鸭'
-        }
+        '文学',
+        '历史地理',
+        '哲学宗教',
+        '艺术',
+        '科教文体',
+        '综合性图书',
+        '政治法律',
+        '漫画绘本',
+        '生物科学',
+        '心理',
+        '语言文字',
+        '建筑',
+        '工具书',
+        '医药卫生',
+        '天文与地球科学',
+        '工业技术',
+        '环境科学',
+        '经济',
+        '社会科学',
+        '数理及化学',
+        '马列毛邓',
+        '军事'
       ]
     }
   },
   methods: {
-    getBooks() {},
-    showBookDialog() {
-      this.isBookDialog = true
+    // 获取图书列表
+    async getBooks() {
+      const { data, status } = await this.$http.get('/book/pageBook', {
+        params: this.query
+      })
+      if (status === 200) {
+        const { list, total } = data
+        this.total = total
+        this.bookList = list
+      } else {
+        this.$message.warning('请求失败')
+      }
     },
-    handleSizeChange() {},
-    handleCurrentChange() {}
+    // 显示添加对话框
+    showAddBookDialog() {
+      this.isAddBookDialog = true
+    },
+    showEditBookDialog(data) {
+      this.isEditBookDialog = true
+      this.editBookForm = this.convertDeepCopy(data)
+    },
+    // 最大页
+    handleSizeChange(size) {
+      this.query.size = size
+      this.query.page = 1
+      this.getBooks()
+    },
+    // 当前页
+    handleCurrentChange(currentIndex) {
+      this.query.page = currentIndex
+      this.getBooks()
+    },
+    // 添加图片上传成功
+    handleAddAvatarSuccess(res, file) {
+      this.$set(this.addBookForm, 'imageUrl', URL.createObjectURL(file.raw))
+      this.addBookForm.id = res
+    },
+    // 修改图片上传成功
+    handleEditAvatarSuccess(res, file) {
+      this.$set(this.editBookForm, 'imageUrl', URL.createObjectURL(file.raw))
+    },
+    // 清空对话框
+    clearDialog(formName) {
+      this.$refs[formName].resetFields()
+    },
+    // 提交图书表单
+    submitBookForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (!valid) return
+        if (formName === 'addBookForm') {
+          this.handleBookForm(this.addBookForm, '/book/insert', ADD)
+        } else if (formName === 'editBookForm') {
+          this.handleBookForm(this.editBookForm, '/book/updateIgnoreNull', EDIT)
+        }
+      })
+    },
+    // 处理图书表单
+    async handleBookForm(formData, url, flag) {
+      if (flag === ADD) {
+        const { status, data } = await this.$http.post(url, formData)
+        if (status === 200) {
+          if (data.success) {
+            this.isAddBookDialog = false
+            this.$message.success('添加成功')
+          } else {
+            this.$message.error('添加失败')
+          }
+        } else {
+          this.$message.warning('请求失败')
+        }
+      } else if (flag === EDIT) {
+        const { status, data } = await this.$http.put(url, formData)
+        if (status === 200) {
+          if (data.success) {
+            this.isEditBookDialog = false
+            this.$message.success('添加成功')
+          } else {
+            this.$message.error('添加失败')
+          }
+        } else {
+          this.$message.warning('请求失败')
+        }
+      }
+      this.getBooks()
+    },
+    // 删除图书
+    deleteBookById(id) {
+      this.$confirm('此操作将永久删除书籍, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error',
+        center: true
+      })
+        .then(async () => {
+          const { data, status } = await this.$http.delete('/book/delete', {
+            params: {
+              id
+            }
+          })
+          if (status === 200) {
+            if (data.success) {
+              this.getBooks()
+              this.$message.success('删除成功')
+            } else {
+              this.$message.error('删除失败')
+            }
+          } else {
+            this.$message.warning('请求失败')
+          }
+        })
+        .catch(() => {
+          this.$message.info('已取消删除')
+        })
+    }
+  },
+  created() {
+    this.getBooks()
   }
 }
 </script>
