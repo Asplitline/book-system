@@ -39,7 +39,7 @@
       </el-col>
     </el-row>
     <!-- 用户表单 -->
-    <el-table :data="bookList" stripe style="width: 100%" max-height="600">
+    <el-table :data="bookList" stripe style="width: 100%" max-height="500">
       <el-table-column prop="bm" label="书籍编号" min-width="50">
       </el-table-column>
       <el-table-column prop="name" label="书名" min-width="150">
@@ -91,6 +91,7 @@
               type="warning"
               icon="el-icon-tickets"
               size="small"
+              @click="showBookDetail(row)"
             ></el-button>
           </el-tooltip>
         </template>
@@ -110,7 +111,7 @@
     <!-- 添加书籍对话框 -->
     <el-dialog
       :visible.sync="isAddBookDialog"
-      width="25%"
+      width="30%"
       class="book-dialog"
       @close="clearDialog('addBookForm')"
       :close-on-click-modal="false"
@@ -150,7 +151,7 @@
             v-model="addBookForm.description"
             type="textarea"
             resize="none"
-            :autosize="{ minRows: 2, maxRows: 6 }"
+            :autosize="{ minRows: 2, maxRows: 4 }"
           ></el-input>
         </el-form-item>
         <el-form-item label="封面" prop="imageUrl">
@@ -163,7 +164,7 @@
           >
             <img
               v-if="addBookForm.imageUrl"
-              :src="addBookForm.imageUrl"
+              :src="bindUrl(addBookForm.imageUrl)"
               class="avatar"
             />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -185,7 +186,7 @@
     <!-- 修改书籍对话框 -->
     <el-dialog
       :visible.sync="isEditBookDialog"
-      width="25%"
+      width="30%"
       class="book-dialog"
       @close="clearDialog('editBookForm')"
       :close-on-click-modal="false"
@@ -225,7 +226,7 @@
             v-model="editBookForm.description"
             type="textarea"
             resize="none"
-            :autosize="{ minRows: 2, maxRows: 6 }"
+            :autosize="{ minRows: 2, maxRows: 4 }"
           ></el-input>
         </el-form-item>
         <el-form-item label="封面" prop="imageUrl">
@@ -235,10 +236,11 @@
             :show-file-list="false"
             :on-success="handleEditAvatarSuccess"
             name="files"
+            :data="{ id: editBookForm.fileId }"
           >
             <img
               v-if="editBookForm.imageUrl"
-              :src="editBookForm.imageUrl"
+              :src="bindUrl(editBookForm.imageUrl)"
               class="avatar"
             />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -257,10 +259,49 @@
         >
       </span>
     </el-dialog>
+    <!-- 书籍详情 -->
+    <el-dialog :visible.sync="isBookDetailDialog" width="28%" center>
+      <div class="detail-container">
+        <div class="info">
+          <img :src="bindUrl(currentBook.imageUrl)" alt="" class="cover" />
+          <div class="content">
+            <p>
+              <i class="icon-slack iconfont"></i>编号:<span>{{
+                currentBook.bm
+              }}</span>
+            </p>
+            <p>
+              <i class="icon-tag-fill iconfont"></i>名称:<span>{{
+                currentBook.name
+              }}</span>
+            </p>
+            <p>
+              <i class="el-icon-s-flag"></i>类型:<span>{{
+                currentBook.lx
+              }}</span>
+            </p>
+            <p>
+              <i class="el-icon-s-custom"></i>作者:<span>{{
+                currentBook.author
+              }}</span>
+            </p>
+            <p class="breif">
+              <i class="el-icon-s-promotion"></i>简介<br />
+              <span>{{
+                currentBook.description === 'string'
+                  ? '暂无简介'
+                  : currentBook.description
+              }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 const ADD = 0
 const EDIT = 1
 export default {
@@ -295,6 +336,7 @@ export default {
       },
       isAddBookDialog: false,
       isEditBookDialog: false,
+      isBookDetailDialog: false,
       // example
       options: [
         '文学',
@@ -319,10 +361,12 @@ export default {
         '数理及化学',
         '马列毛邓',
         '军事'
-      ]
+      ],
+      currentBook: {}
     }
   },
   methods: {
+    ...mapActions(['getFileById']),
     // 获取图书列表
     async getBooks() {
       const { data, status } = await this.$http.get('/book/pageBook', {
@@ -340,9 +384,24 @@ export default {
     showAddBookDialog() {
       this.isAddBookDialog = true
     },
-    showEditBookDialog(data) {
+    // 显示修改对话框
+    async showEditBookDialog(formData) {
       this.isEditBookDialog = true
-      this.editBookForm = this.convertDeepCopy(data)
+      this.editBookForm = this.convertDeepCopy(formData)
+      const file = await this.getFileById(this.editBookForm.id)
+      this.$set(this.editBookForm, 'imageUrl', file.name)
+      this.editBookForm.fileId = file.id
+    },
+    // 书籍详情
+    async showBookDetail(formData) {
+      this.currentBook = this.convertDeepCopy(formData)
+      const file = await this.getFileById(this.currentBook.id)
+      this.$set(
+        this.currentBook,
+        'imageUrl',
+        file.name === 'default_pic.png' ? 'book-default.gif' : file.name
+      )
+      this.isBookDetailDialog = true
     },
     // 最大页
     handleSizeChange(size) {
@@ -357,12 +416,12 @@ export default {
     },
     // 添加图片上传成功
     handleAddAvatarSuccess(res, file) {
-      this.$set(this.addBookForm, 'imageUrl', URL.createObjectURL(file.raw))
+      this.$set(this.addBookForm, 'imageUrl', file.name)
       this.addBookForm.id = res
     },
     // 修改图片上传成功
     handleEditAvatarSuccess(res, file) {
-      this.$set(this.editBookForm, 'imageUrl', URL.createObjectURL(file.raw))
+      this.$set(this.editBookForm, 'imageUrl', file.name)
     },
     // 清空对话框
     clearDialog(formName) {
@@ -398,9 +457,9 @@ export default {
         if (status === 200) {
           if (data.success) {
             this.isEditBookDialog = false
-            this.$message.success('添加成功')
+            this.$message.success('修改成功')
           } else {
-            this.$message.error('添加失败')
+            this.$message.error('修改失败')
           }
         } else {
           this.$message.warning('请求失败')
@@ -474,6 +533,53 @@ export default {
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 20px;
+    }
+  }
+  // /deep/.el-dialog {
+  //   .el-dialog__body {
+  //     //border-top: 1px solid #dcdfe6;
+  //     //border-bottom: 1px solid #dcdfe6;
+  //     max-height: 500px !important;
+  //     min-height: 100px;
+  //     overflow-y: auto;
+  //   }
+  // }
+  // 书籍详情
+}
+.detail-container {
+  .info {
+    display: flex;
+    img {
+      width: 35%;
+      height: 52%;
+    }
+    .content {
+      box-sizing: border-box;
+      padding-left: 4%;
+      flex: 1;
+      p {
+        color: #000;
+        letter-spacing: 2px;
+        padding: 10px 0;
+        border-bottom: 1px solid #ccc;
+        .iconfont {
+          vertical-align: bottom;
+        }
+        span {
+          color: #888;
+        }
+      }
+
+      p:first-child {
+        padding-top: 0;
+      }
+
+      .breif {
+        border-bottom: none;
+        i {
+          margin-bottom: 6px;
+        }
+      }
     }
   }
 }

@@ -70,16 +70,10 @@
     </el-card>
     <!-- 对话框 -->
     <!-- 书籍详情 -->
-    <el-dialog :visible.sync="isBookDetailDialog" width="36%" center>
+    <el-dialog :visible.sync="isBookDetailDialog" width="28%" center>
       <div class="detail-container">
         <div class="info">
-          <img
-            :src="bindUrl('s1426466.jpg')"
-            alt=""
-            width="40%"
-            height="64%"
-            class="cover"
-          />
+          <img :src="bindUrl(currentBook.imageUrl)" alt="" class="cover" />
           <div class="content">
             <p>
               <i class="icon-slack iconfont"></i>编号:<span>{{
@@ -172,6 +166,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -200,6 +195,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getFileById']),
     // 获取书籍列表
     async getBooks() {
       const { data, status } = await this.$http.get('/book/pageBook', {
@@ -219,9 +215,15 @@ export default {
       this.getBooks()
     },
     // 显示图书详情
-    showBookDetail(data) {
+    async showBookDetail(data) {
       this.isBookDetailDialog = true
       this.currentBook = data
+      const file = await this.getFileById(this.currentBook.id)
+      this.$set(
+        this.currentBook,
+        'imageUrl',
+        file.name === 'default_pic.png' ? 'book-default.gif' : file.name
+      )
     },
     // 显示图书报修
     showBookRepair(data) {
@@ -232,7 +234,7 @@ export default {
     handleDialogClose(formName) {
       this.$refs[formName].resetFields()
     },
-    // 提交信息
+    // 提交报修信息
     submitRepairInfo(formName) {
       const current = this.isLoginAndGetCommonInfo()
       if (current === null) {
@@ -290,6 +292,7 @@ export default {
     // 图片上传后回显
     handleAddAvatarSuccess(res, file) {
       this.$set(this.bookRepairForm, 'imageUrl', URL.createObjectURL(file.raw))
+      this.bookRepairForm.id = res
     },
     // 登录判断并获取公共信息
     isLoginAndGetCommonInfo() {
@@ -301,10 +304,9 @@ export default {
       } else {
         return {
           userId: currentUr.id,
-          username: currentUr.username,
+          userName: currentUr.username,
           bookId: currentBk.id,
           bookName: currentBk.name,
-          id: '',
           state: 0
         }
       }
@@ -352,9 +354,14 @@ export default {
 .detail-container {
   .info {
     display: flex;
+    img {
+      width: 35%;
+      height: 52%;
+    }
     .content {
       box-sizing: border-box;
       padding-left: 4%;
+      flex: 1;
       p {
         color: #000;
         letter-spacing: 2px;

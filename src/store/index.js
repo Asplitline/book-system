@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import Axios from 'axios'
 
 Vue.use(Vuex)
 
@@ -14,18 +15,34 @@ export default new Vuex.Store({
       sessionStorage.setItem('userInfo', JSON.stringify(data))
       state.user = data
     },
-    initImg (state, name) {
-      state.currentImg = name
+    initImg (state, { data }) {
+      state.currentImg = data.length > 0 ? data[0].filename : ''
     },
     initLoginStatus (state, flag) {
       state.isLogin = flag
     }
   },
   actions: {
-    // getPictureById ({ commit }, id) {
-    //   this.$http.get('/util/getFilesByUserId/')
-    //   commit('')
-    // }
+    async getFileById ({ commit }, id) {
+      const { data } = await Axios.get('/util/getFilesByUserId/', {
+        params: {
+          id
+        }
+      })
+      if (data.length > 0) {
+        return { name: data[0].filename, id: data[0].id }
+      } else {
+        return { name: 'default_pic.png' }
+      }
+    },
+    async getBookById ({ commit }, id) {
+      const { data } = await Axios.get('/book/getById', {
+        params: {
+          id
+        }
+      })
+      return data
+    }
   },
   modules: {
   }

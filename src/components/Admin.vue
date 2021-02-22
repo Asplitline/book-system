@@ -6,8 +6,8 @@
           <el-menu
             class="el-menu-demo"
             mode="horizontal"
-            background-color="#1a4d72"
-            text-color="#fff"
+            background-color="#444444"
+            text-color="#eee"
             active-text-color="#ffd04b"
           >
             <el-menu-item
@@ -18,12 +18,12 @@
             >
             <el-submenu class="user-info" index="1">
               <template slot="title">
-                <img :src="bindUrl('T_2014_363.jpg')" class="avatar" />
-                <span v-once>123</span>
+                <img :src="bindUrl(currentUser.imgUrl)" class="avatar" />
+                <span>{{ currentUser.username }}</span>
               </template>
-              <el-menu-item
+              <!-- <el-menu-item
                 ><i class="icon-user iconfont"></i>个人中心</el-menu-item
-              >
+              > -->
               <el-menu-item @click="logout"
                 ><i class="icon-export iconfont"></i>退出系统</el-menu-item
               >
@@ -63,10 +63,10 @@
               <i class="iconfont icon-setting"></i>
               <span slot="title">报修管理</span>
             </el-menu-item>
-            <el-menu-item index="/_post" @click="saveActiveMenu('/_post')">
+            <!-- <el-menu-item index="/_post" @click="saveActiveMenu('/_post')">
               <i class="iconfont icon-solution"></i>
               <span slot="title">帖子管理</span>
-            </el-menu-item>
+            </el-menu-item> -->
             <el-menu-item index="/_borrow" @click="saveActiveMenu('/_borrow')">
               <i class="iconfont icon-upload"></i>
               <span slot="title">借还管理</span>
@@ -87,19 +87,44 @@
   </div>
 </template>
 <script>
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
       isCollapse: false,
-      activePath: ''
+      activePath: sessionStorage.getItem('currentIndexA'),
+      currentUser: JSON.parse(sessionStorage.getItem('userInfo'))
     }
   },
   methods: {
-    saveActiveMenu() {},
-    logout() {},
+    ...mapActions(['getFileById']),
+    logout() {
+      this.$confirm('此操作退出系统, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error',
+        center: true
+      })
+        .then(async () => {
+          sessionStorage.clear()
+          this.$router.push('/login')
+        })
+        .catch(() => {
+          this.$message.info('已取消')
+        })
+    },
     toToggleMenu() {
       this.isCollapse = !this.isCollapse
+    },
+    // 获取用户头像
+    async getAvatarById() {
+      const file = await this.getFileById(this.currentUser.id)
+      this.$set(this.currentUser, 'imgUrl', file.name)
+      console.log(this.currentUser)
     }
+  },
+  created() {
+    this.getAvatarById()
   }
 }
 </script>
@@ -107,6 +132,7 @@ export default {
 <style lang="less" scoped>
 .admin {
   min-width: 800px;
+  height: 100%;
 }
 .main-container {
   height: 100%;
@@ -127,6 +153,7 @@ export default {
       width: 40px;
       height: 40px;
       border-radius: 50%;
+      margin-right: 6px;
     }
   }
   .iconfont {

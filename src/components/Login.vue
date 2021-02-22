@@ -61,12 +61,13 @@ export default {
         if (!valid) return
         const pwdURL = this.toURL(this.loginForm)
         const { data, status } = await this.$http.post(
-          'http://127.0.0.1:8089/account/api/login',
+          '/account/api/login',
           pwdURL
         )
         if (status === 200) {
           if (data.success) {
             this.$message.success('登录成功')
+            this.$cookies.set('token', data.data.username)
             this.initUser(data.data)
             this.$router.push('/admin')
           } else this.$message.error('登录失败')

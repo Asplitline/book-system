@@ -5,15 +5,15 @@
       <el-row class="topSearch">
         <el-col :span="8">
           <el-input
-            placeholder="请输入内容"
+            placeholder="请输入标题"
             v-model="query.keyword"
-            @clear="a = 1"
+            @clear="getSuggest()"
             clearable
           >
             <el-button
               slot="append"
               icon="el-icon-search"
-              @click="a = 2"
+              @click="getSuggest()"
             ></el-button>
           </el-input>
         </el-col>
@@ -36,7 +36,7 @@
         <el-table :data="suggestTable" style="width: 100%">
           <el-table-column prop="title" label="投诉标题" min-width="100">
           </el-table-column>
-          <el-table-column prop="content" label="投诉内容" min-width="100">
+          <el-table-column prop="description" label="投诉内容" min-width="100">
           </el-table-column>
           <el-table-column prop="createTime" label="投诉时间" min-width="100">
             <template v-slot="{ row }">
@@ -63,7 +63,12 @@
       </el-row>
     </el-card>
     <!-- 添加投诉对话框 -->
-    <el-dialog title="新增投诉" :visible.sync="isSuggestDialog" width="25%">
+    <el-dialog
+      title="新增投诉"
+      :visible.sync="isSuggestDialog"
+      width="25%"
+      @close="clearDialog"
+    >
       <el-form
         :model="suggestForm"
         :rules="suggestRules"
@@ -111,7 +116,6 @@
       </span>
     </el-dialog>
     <!-- 投诉详情对话框 -->
-    <!-- 投诉对话框 -->
     <el-dialog :visible.sync="isSuggesDetailtDialog" width="30%">
       <div class="content">
         <p>
@@ -132,7 +136,7 @@
           投诉图片:
           <span>
             <img
-              :src="bindUrl('T_2014_363.jpg')"
+              :src="bindUrl(suggestFormDetail.imageUrl)"
               alt=""
               width="100"
               height="100"
@@ -158,6 +162,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -184,6 +189,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getFileById']),
+    // 获取投诉建议
     async getSuggest() {
       const { data, status } = await this.$http.get('/addvice/pageAddvice', {
         params: this.query
@@ -195,10 +202,11 @@ export default {
       } else {
         this.$message.warning('请求失败')
       }
-      // this.suggestTable =
     },
+    // 切换页码
     handleCurrentChange(currentIndex) {
       this.query.page = currentIndex
+      this.getSuggest()
     },
     // 处理
     showSuggestDialog() {
@@ -233,8 +241,8 @@ export default {
           this.$message.warning('请求失败')
         }
       })
-      // const res = await this.$http.post('/addvice/insert')
     },
+    // 判断登录状态
     isLoginAndGetCommonInfo() {
       const currentUr = this.$store.state.user
       const currentSg = this.suggestForm
@@ -246,16 +254,22 @@ export default {
           userId: currentUr.id,
           username: currentUr.username,
           title: currentSg.title,
-          content: currentSg.content,
+          description: currentSg.description,
           id: currentSg.id,
           state: 0
         }
       }
     },
     // 显示投诉详情
-    showSuggestDetail(data) {
+    async showSuggestDetail(formData) {
       this.isSuggesDetailtDialog = true
-      this.suggestFormDetail = this.convertDeepCopy(data)
+      this.suggestFormDetail = this.convertDeepCopy(formData)
+      const file = await this.getFileById(this.suggestFormDetail.id)
+      this.$set(this.suggestFormDetail, 'imageUrl', file.name)
+    },
+    // 清空添加投诉
+    clearDialog() {
+      this.suggestForm = {}
     }
   },
   created() {
@@ -329,7 +343,7 @@ export default {
   .content {
     letter-spacing: 2px;
     p {
-      line-height: 30px;
+      line-height: 26px;
       color: #000;
       margin-bottom: 4px;
       span {

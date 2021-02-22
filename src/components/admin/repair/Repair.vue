@@ -17,63 +17,69 @@
           v-model="query.keyword"
           class="input-with-select"
           clearable
+          @clear="getRepair()"
           size="small"
         >
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="getRepair()"
+          ></el-button>
         </el-input>
       </el-col>
     </el-row>
     <!-- 报修表单 -->
-    <el-table :data="repairList" stripe style="width: 100%" max-height="600">
-      <el-table-column prop="name" label="报修编号" min-width="100">
+    <el-table :data="repairList" stripe style="width: 100%" max-height="500">
+      <el-table-column prop="bookName" label="报修书籍" min-width="100">
       </el-table-column>
-      <el-table-column prop="username" label="报修描述" min-width="120">
+      <el-table-column prop="username" label="报修用户" min-width="100">
       </el-table-column>
-      <el-table-column prop="username" label="报修状态" min-width="120">
+      <el-table-column prop="description" label="报修描述" min-width="120">
       </el-table-column>
-      <el-table-column prop="username" label="报修时间" min-width="120">
+      <el-table-column prop="state" label="报修状态" min-width="120">
+        <template v-slot="{ row }">
+          <el-tag v-if="row.state === 0" type="waring">审批中</el-tag>
+          <el-tag v-else-if="row.state === 1" type="info">无故障</el-tag>
+          <el-tag v-else-if="row.state === 2" type="danger">修复中</el-tag>
+          <el-tag v-else type="success">已修复</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="createTime" label="报修时间" min-width="120">
+        <template v-slot="{ row }">
+          {{ row.createTime | formatDate }}
+        </template>
       </el-table-column>
       <el-table-column label="操作" min-width="150">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="处理报修"
-          placement="top"
-          :enterable="false"
-        >
-          <el-button
-            type="primary"
-            icon="el-icon-edit"
-            size="small"
-            @click="showRepair"
-          ></el-button>
-        </el-tooltip>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="删除报修"
-          placement="top"
-          :enterable="false"
-        >
-          <el-button
-            type="danger"
-            icon="el-icon-delete"
-            size="small"
-          ></el-button>
-        </el-tooltip>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="报修详情"
-          placement="top"
-          :enterable="false"
-        >
-          <el-button
-            type="warning"
-            icon="el-icon-tickets"
-            size="small"
-          ></el-button>
-        </el-tooltip>
+        <template v-slot="{ row }">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="处理报修"
+            placement="top"
+            :enterable="false"
+          >
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="small"
+              @click="showRepair(row)"
+            ></el-button>
+          </el-tooltip>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="删除报修"
+            placement="top"
+            :enterable="false"
+          >
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="small"
+              @click="deleteRepairById(row.id)"
+            ></el-button>
+          </el-tooltip>
+        </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
@@ -89,51 +95,65 @@
     </el-pagination>
     <!-- 报修对话框 -->
     <el-dialog :visible.sync="isRepairDialog" width="30%">
-      <el-form
-        :model="repairForm"
-        :rules="repairRules"
-        ref="repairForm"
-        size="mini"
-      >
-        <el-form-item label="报修编号" prop="name">
-          <el-input v-model="repairForm.name" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="报修内容" prop="name">
-          <el-input
-            v-model="repairForm.name"
-            type="textarea"
-            resize="none"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-            disabled
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="报修状态" prop="name">
-          <el-input v-model="repairForm.name" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="报修时间" prop="name">
-          <el-input v-model="repairForm.name" disabled></el-input>
-        </el-form-item>
-        <el-form-item label="报修图片" prop="name">
-          <el-upload class="avatar-uploader" action="#" :show-file-list="false">
+      <div class="content">
+        <p>
+          报修编号:<span>{{ repairForm.id }}</span>
+        </p>
+        <p>
+          报修内容:<span class="mark">{{ repairForm.description }}</span>
+        </p>
+        <p>
+          报修时间:<span>{{ repairForm.createTime | formatDate }}</span>
+        </p>
+        <p>
+          报修状态:<span>{{
+            ['审批中', '无故障', '修复中', '已修复'][repairForm.state]
+          }}</span>
+        </p>
+        <p class="breif">
+          报修图片:
+          <span>
             <img
-              v-if="repairForm.imageUrl"
-              :src="repairForm.imageUrl"
-              class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i
-          ></el-upload>
-        </el-form-item>
-        <el-form-item label="报修状态" prop="name">
-          <el-radio-group v-model="repairForm.radio">
-            <el-radio :label="3">审批中</el-radio>
-            <el-radio :label="6">无故障</el-radio>
-            <el-radio :label="9">维修中</el-radio>
-            <el-radio :label="9">维修完成</el-radio>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
+              :src="bindUrl(repairForm.imgUrl)"
+              alt=""
+              width="100"
+              height="100"
+            />
+          </span>
+        </p>
+        <p>
+          修改进度：
+          <span>
+            <el-radio
+              v-model="repairForm.state"
+              :label="0"
+              :disabled="repairForm.state > 0"
+              >审批中</el-radio
+            >
+            <el-radio
+              v-model="repairForm.state"
+              :label="1"
+              :disabled="repairForm.state > 1"
+              >无故障</el-radio
+            >
+            <el-radio
+              v-model="repairForm.state"
+              :label="2"
+              :disabled="repairForm.state > 2"
+              >修复中</el-radio
+            >
+            <el-radio
+              v-model="repairForm.state"
+              :label="3"
+              :disabled="repairForm.state === 3"
+              >已修复</el-radio
+            >
+          </span>
+        </p>
+      </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isRepairDialog = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="isRepairDialog = false" size="mini"
+        <el-button type="primary" @click="submitRepair()" size="mini"
           >更 新</el-button
         >
       </span>
@@ -142,10 +162,11 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
   data() {
     return {
-      repairList: [{}],
+      repairList: [],
       query: {
         page: 1, // 当前页
         size: 10, // 最大页数
@@ -153,16 +174,94 @@ export default {
       },
       total: 10,
       repairForm: {},
-      repairRules: {},
       isRepairDialog: false
     }
   },
   methods: {
-    showRepair() {
-      this.isRepairDialog = true
+    ...mapActions(['getFileById']),
+    // 获取报修列表
+    async getRepair() {
+      const { data, status } = await this.$http.get('/repair/pageRepair', {
+        params: this.query
+      })
+      if (status === 200) {
+        const { list, total } = data
+        this.repairList = list
+        this.total = total
+      } else {
+        this.$message.warning('请求失败')
+      }
     },
-    handleSizeChange() {},
-    handleCurrentChange() {}
+    // 显示报修对话框
+    async showRepair(formData) {
+      this.isRepairDialog = true
+      this.repairForm = this.convertDeepCopy(formData)
+      const file = await this.getFileById(this.repairForm.id)
+      console.log(file)
+      this.$set(this.repairForm, 'imgUrl', file.name)
+    },
+    // 提交进度
+    async submitRepair() {
+      const { data, status } = await this.$http.put(
+        '/repair/updateIgnoreNull',
+        this.repairForm
+      )
+      if (status === 200) {
+        if (data) {
+          this.$message.success('更新成功')
+          this.isRepairDialog = false
+          this.getRepair()
+        } else {
+          this.$message.error('更新失败')
+        }
+      } else {
+        this.$message.warning('请求失败')
+      }
+      console.log(this.repairForm)
+    },
+    // 当前页
+    handleSizeChange(size) {
+      this.query.size = size
+      this.query.page = 1
+      this.getRepair()
+    },
+    // 最大页
+    handleCurrentChange(currentIndex) {
+      this.query.page = currentIndex
+      this.getRepair()
+    },
+    // 通过id删除报修
+    deleteRepairById(id) {
+      this.$confirm('此操作将永久删除报修, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error',
+        center: true
+      })
+        .then(async () => {
+          const { data, status } = await this.$http.delete('/repair/delete', {
+            params: {
+              id
+            }
+          })
+          if (status === 200) {
+            if (data) {
+              this.$message.success('删除成功')
+              this.getRepair()
+            } else {
+              this.$message.error('删除失败')
+            }
+          } else {
+            this.$message.warning('请求失败')
+          }
+        })
+        .catch(() => {
+          this.$message.info('已取消删除')
+        })
+    }
+  },
+  created() {
+    this.getRepair()
   }
 }
 </script>
@@ -195,6 +294,28 @@ export default {
   /deep/.el-form-item__label {
     text-align-last: left;
     width: 100%;
+  }
+  .content {
+    letter-spacing: 2px;
+    p {
+      line-height: 26px;
+      color: #000;
+      margin-bottom: 4px;
+      span {
+        display: block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 4px 20px;
+        box-sizing: border-box;
+        color: #666;
+      }
+      span img {
+        vertical-align: top;
+      }
+    }
+    .mark {
+      background-color: #f3f3f3;
+    }
   }
 }
 </style>

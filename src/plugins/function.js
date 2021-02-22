@@ -1,11 +1,11 @@
 import Vue from 'vue'
 // 绑定服务器端地址
 Vue.prototype.bindUrl = function (url) {
-    return 'http://127.0.0.1:8089/' + url
+    return 'http://127.0.0.1:8088/' + url
 }
 // 绑定图片上传地址
 Vue.prototype.bindImg = function (url) {
-    return 'http://127.0.0.1:8089/' + url
+    return 'http://127.0.0.1:8088/' + url
 }
 // 转换URL
 Vue.prototype.toURL = function (obj) {

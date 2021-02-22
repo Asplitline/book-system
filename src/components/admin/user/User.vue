@@ -39,7 +39,7 @@
       </el-col>
     </el-row>
     <!-- 用户表单 -->
-    <el-table :data="userList" stripe style="width: 100%" max-height="600">
+    <el-table :data="userList" stripe style="width: 100%" max-height="500">
       <el-table-column prop="username" label="账号" min-width="100">
       </el-table-column>
       <el-table-column prop="name" label="昵称" min-width="120">
@@ -83,7 +83,7 @@
               type="danger"
               icon="el-icon-delete"
               size="small"
-              @click="deleteUser(row.id)"
+              @click="deleteUserById(row.id)"
             ></el-button>
           </el-tooltip>
           <el-tooltip
@@ -166,7 +166,7 @@
           >
             <img
               v-if="addUserForm.imgUrl"
-              :src="addUserForm.imgUrl"
+              :src="bindUrl(addUserForm.imgUrl)"
               class="avatar"
               ref="preview"
             />
@@ -240,10 +240,11 @@
             :show-file-list="false"
             :on-success="handleEditAvatarSuccess"
             name="files"
+            :data="{ id: editUserForm.fileId }"
           >
             <img
               v-if="editUserForm.imgUrl"
-              :src="editUserForm.imgUrl"
+              :src="bindUrl(editUserForm.imgUrl)"
               class="avatar"
               ref="preview"
             />
@@ -276,6 +277,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 const DEFAULT_PASSWORD = 123456
 const ADD = 0
 const EDIT = 1
@@ -338,6 +340,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getFileById']),
     // 获取用户列表
     async getUsers() {
       const { data, status } = await this.$http.get('/user/pageUser', {
@@ -360,15 +363,11 @@ export default {
       this.isEditUserDialog = true
       this.editUserForm = this.convertDeepCopy(data)
       // 动态添加的属性非响应式的，用set使其变为响应式
-      this.$set(this.editUserForm, 'imgUrl', '')
+      const file = await this.getFileById(this.editUserForm.id)
+      this.$set(this.editUserForm, 'imgUrl', file.name)
+      this.editUserForm.fileId = file.id
     },
-    // 根据id查找图片
-    async findImgById(id) {
-      const res = await this.$http.get('/util/getFilesByUserId', {
-        params: id
-      })
-      return res.data || null
-    },
+
     // 最大页改变
     handleSizeChange(size) {
       this.query.size = size
@@ -382,11 +381,11 @@ export default {
     },
     // 图片预览
     handleAddAvatarSuccess(res, file) {
-      this.addUserForm.imgUrl = URL.createObjectURL(file.raw)
+      this.addUserForm.imgUrl = file.name
       this.addUserForm.id = res
     },
     handleEditAvatarSuccess(res, file) {
-      this.editUserForm.imgUrl = URL.createObjectURL(file.raw)
+      this.editUserForm.imgUrl = file.name
     },
     // 提交用户表单
     submitUserForm(formName) {
@@ -430,7 +429,7 @@ export default {
       this.getUsers()
     },
     // 删除用户
-    deleteUser(id) {
+    deleteUserById(id) {
       this.$confirm('此操作将永久删除用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

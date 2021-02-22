@@ -173,7 +173,7 @@
 export default {
   data() {
     return {
-      activeIndex: 3,
+      activeIndex: Number(sessionStorage.getItem('asideIndex')) || 1,
       // 1
       userInfoForm: {},
       userInfoRules: {},
@@ -191,7 +191,52 @@ export default {
     },
     // 修改头像
     handleAvatarSuccess() {},
-    beforeAvatarUpload() {}
+    beforeAvatarUpload() {},
+    // 处理active
+    handleActive() {
+      switch (this.activeIndex) {
+        case 1:
+          this.handleUserInfo()
+          break
+        case 2:
+          this.handleChangePassword()
+          break
+        case 3:
+          this.handleBorrowRecords()
+          break
+        case 4:
+          this.handleSuggestRecords()
+          break
+      }
+    },
+    // 1----
+    handleUserInfo() {
+      console.log(1)
+    },
+    // 2----
+    handleChangePassword() {
+      console.log(2)
+    },
+    // 3----
+    handleBorrowRecords() {
+      console.log(3)
+    },
+    // 4----
+    handleSuggestRecords() {
+      console.log(4)
+    }
+  },
+  watch: {
+    activeIndex(newVal) {
+      sessionStorage.setItem('asideIndex', newVal)
+      this.handleActive()
+    }
+  },
+  destroyed() {
+    sessionStorage.removeItem('asideIndex')
+  },
+  created() {
+    this.handleActive()
   }
 }
 </script>

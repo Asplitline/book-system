@@ -44,6 +44,7 @@ const routes = [
     path: '/admin',
     name: 'Admin',
     component: Admin,
+    redirect: '/_user',
     children: [
       { path: '/_borrow', name: 'aBorrow', component: aBorrow },
       { path: '/_goods', name: 'aGoods', component: aGoods },
@@ -64,8 +65,27 @@ const router = new VueRouter({
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   console.log(to, from)
-//   next()
-// })
+router.beforeEach((to, from, next) => {
+  switch (to.path) {
+    case '/_borrow':
+    case '/_goods':
+    case '/_log':
+    case '/_post':
+    case '/_repair':
+    case '/_suggest':
+    case '/_user':
+      sessionStorage.setItem('currentIndexA', to.path)
+      break
+    case '/index':
+    case '/borrow':
+    case '/suggest':
+    case '/repair':
+    case '/post':
+    case '/info':
+      sessionStorage.setItem('currentIndexF', to.path)
+      break
+  }
+
+  next()
+})
 export default router

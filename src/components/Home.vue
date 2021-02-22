@@ -7,7 +7,9 @@
           :default-active="activeIndex"
           class="w"
           mode="horizontal"
-          text-color="#d8e5ff"
+          background-color="#444444"
+          text-color="#eee"
+          active-text-color="#ffd04b"
           router
         >
           <!-- @select="handleSelect" -->
@@ -26,9 +28,9 @@
           <el-menu-item index="/repair"
             ><i class="icon-setting iconfont"></i>损坏保修</el-menu-item
           >
-          <el-menu-item index="/post"
+          <!-- <el-menu-item index="/post"
             ><i class="icon-solution iconfont"></i>帖子中心</el-menu-item
-          >
+          > -->
           <el-menu-item index="/info"
             ><i class="icon-user iconfont"></i>个人中心</el-menu-item
           >
@@ -61,7 +63,7 @@
       <el-form
         :model="loginForm"
         :rules="loginRules"
-        ref="loginRules"
+        ref="loginForm"
         size="small"
       >
         <h4 content-position="left" class="title">登录界面</h4>
@@ -98,7 +100,7 @@ export default {
   name: 'Home',
   data() {
     return {
-      activeIndex: '/index',
+      activeIndex: sessionStorage.getItem('currentIndexF'),
       isLoginDiaglog: false,
       loginForm: {},
       loginRules: {
@@ -132,6 +134,7 @@ export default {
         if (data.success) {
           this.$message.success('登录成功')
           this.isLoginDiaglog = false
+          this.$cookies.set('token', data.data.username)
           this.initUser(data.data)
           this.getLoginStatus()
         }
@@ -182,7 +185,7 @@ export default {
   min-height: 100vh;
   // 头部导航
   .el-header {
-    background-color: #1a4d72;
+    background-color: #444;
     padding: 0 20px;
     // logo
     .logo {
