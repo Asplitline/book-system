@@ -67,7 +67,7 @@ export default {
         if (status === 200) {
           if (data.success) {
             this.$message.success('登录成功')
-            this.$cookies.set('token', data.data.username)
+            this.$cookies.set('token', `username=${data.data.username}`)
             this.initUser(data.data)
             this.$router.push('/admin')
           } else this.$message.error('登录失败')
