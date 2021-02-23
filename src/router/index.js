@@ -29,6 +29,7 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home,
+    redirect: '/index',
     children: [
       { path: '/index', name: 'index', component: Index },
       { path: '/borrow', name: 'borrow', component: Borrow },
@@ -83,6 +84,9 @@ router.beforeEach((to, from, next) => {
     case '/post':
     case '/info':
       sessionStorage.setItem('currentIndexF', to.path)
+      break
+    case '/':
+      sessionStorage.setItem('currentIndexF', '/index')
       break
   }
 

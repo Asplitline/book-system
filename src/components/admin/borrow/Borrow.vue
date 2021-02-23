@@ -92,6 +92,7 @@
               type="success"
               icon="el-icon-finished"
               size="small"
+              @click="returnBook(row)"
             ></el-button>
           </el-tooltip>
         </template>
@@ -204,6 +205,7 @@ export default {
     // 当前页
     handleCurrentChange(currentIndex) {
       this.query.page = currentIndex
+      this.getBorrow()
     },
     // 提交借阅
     async submitBorrow() {
@@ -256,6 +258,25 @@ export default {
         .catch(() => {
           this.$message.info('已取消删除')
         })
+    },
+    // 退还书籍
+    async returnBook(formData) {
+      const form = this.convertDeepCopy(formData)
+      form.state = 5
+      const { data, status } = await this.$http.put(
+        '/borrow/updateIgnoreNull',
+        form
+      )
+      if (status === 200) {
+        if (data.success) {
+          this.getBorrow()
+          this.$message.success('归还成功')
+        } else {
+          this.$message.error('归还失败')
+        }
+      } else {
+        this.$message.warning('请求失败')
+      }
     }
   },
   created() {

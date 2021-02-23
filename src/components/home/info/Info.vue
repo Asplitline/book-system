@@ -4,10 +4,10 @@
       <el-col :span="5" :offset="2">
         <!-- 用户信息 -->
         <el-card class="user-info">
-          <img :src="bindUrl('T_2014_363.jpg')" alt="" />
+          <img :src="bindUrl(currentUser.imgUrl)" alt="" />
           <div class="desc">
-            <h4 class="username">nihao</h4>
-            <p>青春是一个短暂的美梦, 当你醒来时, 它早已消失无踪</p>
+            <h4 class="username">{{ currentUser.name }}</h4>
+            <p>{{ currentUser.description }}</p>
           </div>
         </el-card>
         <!-- 左侧导航栏 -->
@@ -30,7 +30,7 @@
             </li>
             <li @click="setActive(4)">
               <a href="javascript:;" :class="{ active: activeIndex === 4 }"
-                ><i class="iconfont icon-solution">发帖记录</i></a
+                ><i class="iconfont icon-solution">投诉记录</i></a
               >
             </li>
           </ul>
@@ -117,56 +117,171 @@
               ref="passwordForm"
               size="small"
               label-width="100px"
+              :hide-required-asterisk="true"
             >
-              <el-form-item prop="name">
+              <el-form-item prop="oldPassword">
                 <span slot="label"
                   ><i class="icon-lock iconfont"></i>旧密码</span
                 >
-                <el-input v-model="passwordForm.name"></el-input>
+                <el-input
+                  v-model="passwordForm.oldPassword"
+                  type="password"
+                ></el-input>
               </el-form-item>
-              <el-form-item prop="name">
+              <el-form-item prop="newPassword">
                 <span slot="label"
                   ><i class="icon-lock iconfont"></i>新密码</span
                 >
-                <el-input v-model="passwordForm.name"></el-input>
+                <el-input
+                  v-model="passwordForm.newPassword"
+                  type="password"
+                ></el-input>
               </el-form-item>
-              <el-form-item prop="name">
+              <el-form-item prop="confirmPassword">
                 <span slot="label"
                   ><i class="icon-lock iconfont"></i>确认密码</span
                 >
-                <el-input v-model="passwordForm.name"></el-input>
+                <el-input
+                  v-model="passwordForm.confirmPassword"
+                  type="password"
+                ></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="success">修改</el-button>
+                <el-button
+                  type="success"
+                  @click="submitChangePassword('passwordForm')"
+                  >修改</el-button
+                >
               </el-form-item>
             </el-form>
           </div>
           <!-- 借阅记录 -->
           <div class="borrow-records" v-else-if="activeIndex === 3">
-            <el-table :data="borrowTable" style="width: 100%">
-              <el-table-column prop="date" label="书籍编号" min-width="80">
+            <el-table :data="borrowTable" style="width: 100%" key="borrowTable">
+              <el-table-column prop="bookId" label="书籍ID" min-width="180">
               </el-table-column>
-              <el-table-column prop="name" label="书籍名称" min-width="80">
+              <el-table-column prop="bookName" label="书籍名称" min-width="60">
               </el-table-column>
-              <el-table-column prop="address" label="书籍分类" min-width="80">
+              <!-- <el-table-column prop="address" label="书籍分类" min-width="80">
+              </el-table-column> -->
+              <el-table-column prop="state" label="借阅状态" min-width="60">
+                <template v-slot="{ row }">
+                  <el-tag v-if="row.state === 0" type="warning">审核中</el-tag>
+                  <el-tag v-if="row.state === 1" type="danger">不通过</el-tag>
+                  <el-tag v-if="row.state === 3">借阅中</el-tag>
+                  <el-tag v-if="row.state === 4" type="info">归还中</el-tag>
+                  <el-tag v-if="row.state === 5" type="success">已归还</el-tag>
+                </template>
               </el-table-column>
-              <el-table-column prop="date" label="借阅状态" min-width="80">
-              </el-table-column>
-              <el-table-column prop="name" label="借阅结果" min-width="80">
-              </el-table-column>
-              <el-table-column prop="address" label="归还结果" min-width="80">
-              </el-table-column>
-              <el-table-column prop="address" label="操作" min-width="80">
-                <el-button type="primary" size="mini">归还</el-button>
+              <el-table-column prop="address" label="操作" min-width="60">
+                <template v-slot="{ row }">
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    @click="returnBook(row)"
+                    :disabled="row.state !== 3"
+                    >归还</el-button
+                  >
+                </template>
                 <!-- <el-button type="danger" size="mini" disabled>归还</el-button> -->
               </el-table-column>
             </el-table>
           </div>
-          <!-- 发帖记录 -->
-          <div class="post-records" v-else>1234</div>
+          <!-- 投诉记录 -->
+          <div class="suggest-records" v-else-if="activeIndex === 4">
+            <el-table
+              :data="suggestTable"
+              style="width: 100%"
+              key="suggestTable"
+            >
+              <el-table-column prop="title" label="投诉标题" min-width="80">
+              </el-table-column>
+              <el-table-column
+                prop="description"
+                label="投诉内容"
+                min-width="80"
+              >
+              </el-table-column>
+              <el-table-column
+                prop="createTime"
+                label="投诉时间"
+                min-width="100"
+              >
+                <template v-slot="{ row }">
+                  {{ row.createTime | formatDate }}
+                </template>
+              </el-table-column>
+              <el-table-column prop="state" label="投诉进度" min-width="60">
+                <template v-slot="{ row }">
+                  <el-tag v-if="row.state === 0">未回复</el-tag>
+                  <el-tag v-else-if="row.state === 1" type="success"
+                    >已回复</el-tag
+                  >
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" min-width="60">
+                <template v-slot="{ row }">
+                  <el-button
+                    type="primary"
+                    size="mini"
+                    @click="showSuggestDetail(row)"
+                    >详情</el-button
+                  >
+                </template>
+                <!-- <el-button type="danger" size="mini" disabled>归还</el-button> -->
+              </el-table-column>
+            </el-table>
+          </div>
         </el-card>
       </el-col>
     </el-row>
+    <!-- 投诉详情对话框 -->
+    <el-dialog
+      :visible.sync="isSuggesDetailtDialog"
+      width="30%"
+      class="suggest-detail"
+    >
+      <div class="content">
+        <p>
+          投诉标题:<span>{{ currentSuggest.title }}</span>
+        </p>
+        <p>
+          投诉内容:<span class="mark">{{ currentSuggest.description }}</span>
+        </p>
+        <p>
+          投诉时间:<span>{{ currentSuggest.createTime | formatDate }}</span>
+        </p>
+        <p>
+          投诉状态:<span>{{
+            currentSuggest.state === 0 ? '未回复' : '已回复'
+          }}</span>
+        </p>
+        <p class="breif">
+          投诉图片:
+          <span>
+            <img
+              :src="bindUrl(currentSuggest.imgUrl)"
+              alt=""
+              width="100"
+              height="100"
+            />
+          </span>
+        </p>
+        <p>
+          投诉回复:<span class="mark">{{
+            currentSuggest.content || '暂未回复'
+          }}</span>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          type="primary"
+          @click="isSuggesDetailtDialog = false"
+          size="mini"
+          >关闭</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -185,6 +300,15 @@ export default {
       const regPhone = /^1[34578]\d{9}$/
       if (regPhone.test(value)) return callback()
       callback(new Error('手机号码不合法'))
+    }
+    const checkPassword = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请再次输入密码'))
+      } else if (value !== this.passwordForm.newPassword) {
+        callback(new Error('两次输入密码不一致!'))
+      } else {
+        callback()
+      }
     }
     return {
       activeIndex: Number(sessionStorage.getItem('asideIndex')) || 1,
@@ -212,9 +336,30 @@ export default {
       currentUser: {},
       // 2
       passwordForm: {},
-      passwordRules: {},
+      passwordRules: {
+        oldPassword: [
+          { required: true, message: '请输入原密码', trigger: 'blur' }
+        ],
+        newPassword: [
+          { required: true, message: '请输入新密码', trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, message: '请输入确认密码', trigger: 'blur' },
+          { validator: checkPassword, trigger: 'blur' }
+        ]
+      },
       // 3
-      borrowTable: [{}]
+      borrowTable: [],
+      // 4
+      suggestTable: [],
+      currentSuggest: {},
+      isSuggesDetailtDialog: false,
+      query: {
+        page: 1,
+        size: 10
+      },
+      total: 10,
+      allBorrow: []
     }
   },
   methods: {
@@ -245,9 +390,17 @@ export default {
           break
       }
     },
+    initData() {
+      this.userInfoForm = {}
+      this.passwordForm = {}
+      this.borrowTable = {}
+      this.suggestTable = {}
+    },
     // 1----
     async handleUserInfo() {
-      this.userInfoForm = this.convertDeepCopy(this.currentUser)
+      // this.initData()
+      this.userInfoForm = this.convertDeepCopy(this.$store.state.user)
+      // console.log(this.userInfoForm)
       const file = await this.getFileById(this.userInfoForm.id)
       this.$set(this.userInfoForm, 'imgUrl', file.name)
       this.userInfoForm.fileId = file.id
@@ -271,15 +424,85 @@ export default {
     },
     // 2----
     handleChangePassword() {
-      console.log(2)
+      // this.initData()
+    },
+    submitChangePassword(formName) {
+      this.$refs[formName].validate(async (valid) => {
+        if (!valid) return
+        const { data, status } = await this.$http.get('/user/changePassword', {
+          params: {
+            id: this.currentUser.id,
+            password: this.passwordForm.newPassword
+          }
+        })
+        if (status === 200) {
+          if (data.success) {
+            this.passwordForm = {}
+            this.$message.success('修改成功')
+          } else {
+            this.$message.error('修改失败')
+          }
+        } else {
+          this.$message.waring('请求失败')
+        }
+      })
     },
     // 3----
-    handleBorrowRecords() {
-      console.log(3)
+    async handleBorrowRecords() {
+      await this.getAllBorrow()
+      this.borrowTable = this.allBorrow.filter((item) => {
+        return item.userId === this.currentUser.id
+      })
+    },
+    async returnBook(formData) {
+      const form = this.convertDeepCopy(formData)
+      form.state = 4
+      const { data, status } = await this.$http.put(
+        '/borrow/updateIgnoreNull',
+        form
+      )
+      if (status === 200) {
+        if (data.success) {
+          this.$message.success('归还中,等待审核')
+          this.handleBorrowRecords()
+        } else {
+          this.$message.error('归还失败')
+        }
+      } else {
+        this.$message.waring('请求失败')
+      }
     },
     // 4----
-    handleSuggestRecords() {
-      console.log(4)
+    async handleSuggestRecords() {
+      // this.initData()
+      const { data, status } = await this.$http.get(
+        '/addvice/getListByUserId',
+        {
+          params: {
+            id: this.currentUser.id
+          }
+        }
+      )
+      if (status === 200) {
+        this.suggestTable = data
+      } else {
+        this.$message.error('请求失败')
+      }
+    },
+    // 显示投诉详情
+    async showSuggestDetail(formData) {
+      this.currentSuggest = formData
+      this.isSuggesDetailtDialog = true
+      const file = await this.getFileById(this.currentSuggest.id)
+      this.$set(this.currentSuggest, 'imgUrl', file.name)
+    },
+    async getAllBorrow() {
+      const { data, status } = await this.$http.get('/borrow/list')
+      if (status === 200) {
+        this.allBorrow = data
+      } else {
+        this.$message.waring('请求失败')
+      }
     }
   },
   watch: {
@@ -291,107 +514,135 @@ export default {
   destroyed() {
     sessionStorage.removeItem('asideIndex')
   },
-  created() {
+  async created() {
     this.handleActive()
     this.currentUser = this.$store.state.user
+    const file = await this.getFileById(this.currentUser.id)
+    this.$set(this.currentUser, 'imgUrl', file.name)
   }
 }
 </script>
 
 <style lang="less" scoped>
-// 用户信息
-.user-info {
-  margin-bottom: 20px;
-  img {
-    display: block;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    padding: 6px;
-    border: 1px solid #ccc;
-    box-shadow: 1px 2px 6px 1px rgb(0 0 0 / 0.1);
-    margin: 0 auto;
-  }
+.info {
+  // 用户信息
+  .user-info {
+    margin-bottom: 20px;
+    img {
+      display: block;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      padding: 6px;
+      border: 1px solid #ccc;
+      box-shadow: 1px 2px 6px 1px rgb(0 0 0 / 0.1);
+      margin: 0 auto;
+    }
 
-  .desc {
-    text-align: center;
-    margin: 20px 0;
-    h4 {
-      font-size: 24px;
-      color: #333;
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 14px;
-      color: #777;
-      line-height: 24px;
-    }
-  }
-}
-// 左侧导航栏
-.menu-nav {
-  li {
-    a {
-      display: inline-block;
-      width: 100%;
-      height: 32px;
-      line-height: 32px;
-      letter-spacing: 4px;
+    .desc {
       text-align: center;
-      color: #2c2c54;
-      transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.2s;
-      border-radius: 4px;
-      margin-bottom: 6px;
-    }
-    a:hover {
-      background-color: #e7e7e7;
-      color: #2c2c54;
-      transform: scale(1.02);
-    }
-    a.active {
-      color: #eff3f5;
-      background-color: #6e6666;
-    }
-
-    i::before {
-      margin-right: 6px;
+      margin: 20px 0;
+      h4 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+      }
+      p {
+        font-size: 14px;
+        color: #777;
+        line-height: 24px;
+      }
     }
   }
-}
-// 右侧内容
-.content {
-  .edit-info {
-    /deep/.el-upload {
-      border: 2px dashed transparent;
-      line-height: 0;
-      border-radius: 2px;
-      width: 120px;
-      height: 120px;
-      img {
+  // 左侧导航栏
+  .menu-nav {
+    li {
+      a {
+        display: inline-block;
         width: 100%;
-        height: 100%;
-        box-shadow: 0px 1px 2px 1px rgba(0 0 0 / 0.2);
+        height: 32px;
+        line-height: 32px;
+        letter-spacing: 4px;
+        text-align: center;
+        color: #2c2c54;
+        transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.2s;
+        border-radius: 4px;
+        margin-bottom: 6px;
       }
-      &:hover {
-        border: 2px dashed #ff525278;
+      a:hover {
+        background-color: #e7e7e7;
+        color: #2c2c54;
+        transform: scale(1.02);
       }
-      i {
-        font-size: 20px;
+      a.active {
+        color: #eff3f5;
+        background-color: #6e6666;
       }
-    }
-  }
 
-  .el-form-item {
-    span {
-      font-size: 16px;
-      letter-spacing: 1px;
-      i {
-        margin-right: 1px;
+      i::before {
+        margin-right: 6px;
       }
     }
   }
-  // .edit-password
-  // .borrow-records
-  // .post-records
+  // 右侧内容
+  .content {
+    .edit-info {
+      /deep/.el-upload {
+        border: 2px dashed transparent;
+        line-height: 0;
+        border-radius: 2px;
+        width: 120px;
+        height: 120px;
+        img {
+          width: 100%;
+          height: 100%;
+          box-shadow: 0px 1px 2px 1px rgba(0 0 0 / 0.2);
+        }
+        &:hover {
+          border: 2px dashed #ff525278;
+        }
+        i {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .el-form-item {
+      span {
+        font-size: 16px;
+        letter-spacing: 1px;
+        i {
+          margin-right: 1px;
+        }
+      }
+    }
+    // .edit-password
+    // .borrow-records
+    // .suggest-records
+  }
+  .suggest-detail {
+    .content {
+      letter-spacing: 2px;
+      p {
+        line-height: 26px;
+        color: #000;
+        margin-bottom: 4px;
+        span {
+          display: block;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+          padding: 4px 20px;
+          box-sizing: border-box;
+          color: #666;
+        }
+        span img {
+          vertical-align: top;
+        }
+      }
+      .mark {
+        background-color: #f3f3f3;
+      }
+    }
+  }
 }
 </style>

@@ -5,7 +5,7 @@
       <el-row class="topSearch">
         <el-col :span="8">
           <el-input
-            placeholder="请输入内容"
+            placeholder="请输入书籍名称"
             v-model="query.keyword"
             @clear="getBooks"
             clearable
@@ -29,7 +29,7 @@
       <!-- 列表表格 -->
       <el-row class="bottomTable">
         <el-table :data="borrowList" style="width: 100%">
-          <el-table-column prop="bm" label="书籍编号" min-width="80">
+          <el-table-column prop="bm" label="书籍编号" min-width="160">
           </el-table-column>
           <el-table-column prop="name" label="书籍名称" min-width="160">
           </el-table-column>
@@ -184,7 +184,8 @@ export default {
         description: [
           { required: true, message: '请输入报修信息', trigger: 'blur' },
           { min: 2, max: 50, message: '长度在 2 到 50 个字符', trigger: 'blur' }
-        ]
+        ],
+        imageUrl: [{ required: true, message: '请用图片说明', trigger: 'blur' }]
       },
       isRepairImgDialog: false,
       repairImageUrl: '',
@@ -305,6 +306,7 @@ export default {
         return {
           userId: currentUr.id,
           userName: currentUr.username,
+          username: currentUr.username,
           bookId: currentBk.id,
           bookName: currentBk.name,
           state: 0

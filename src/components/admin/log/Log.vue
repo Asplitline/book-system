@@ -13,19 +13,29 @@
     <el-row class="mixInp" :gutter="20">
       <el-col :span="6">
         <el-input
-          placeholder="请输入内容"
+          placeholder="请输入日志内容"
           v-model="query.keyword"
           class="input-with-select"
           clearable
+          @clear="getLog()"
           size="small"
         >
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search"
+            @click="getLog()"
+          ></el-button>
         </el-input>
       </el-col>
     </el-row>
     <!-- 日志表单 -->
     <el-table :data="logList" stripe style="width: 100%" max-height="500">
       <el-table-column prop="description" label="日志内容" min-width="100">
+      </el-table-column>
+      <el-table-column prop="lx" label="日志类型" min-width="100">
+        <template v-slot="{ row }">
+          {{ ['', '操作日志', '登录日志'][row.lx] }}
+        </template>
       </el-table-column>
       <el-table-column prop="createTime" label="操作时间" min-width="100">
         <template v-slot="{ row }">

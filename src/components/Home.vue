@@ -1,8 +1,8 @@
 <template>
-  <div class="home">
+  <div class="home" :class="{ indexS: isIndex }">
     <el-container>
       <!-- 头部导航 -->
-      <el-header>
+      <el-header v-show="!isIndex">
         <el-menu
           :default-active="activeIndex"
           class="w"
@@ -109,7 +109,8 @@ export default {
         ],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
       },
-      isLogin: false
+      isLogin: false,
+      isIndex: false
     }
   },
   methods: {
@@ -134,10 +135,7 @@ export default {
         if (data.success) {
           this.$message.success('登录成功')
           this.isLoginDiaglog = false
-          this.$cookies.set(
-            'token',
-            `username=${data.data.username}`
-          )
+          this.$cookies.set('token', `username=${data.data.username}`)
           this.initUser(data.data)
           this.getLoginStatus()
         }
@@ -176,6 +174,12 @@ export default {
   },
   created() {
     this.getLoginStatus()
+    this.activeIndex = sessionStorage.getItem('currentIndexF')
+    this.isIndex = sessionStorage.getItem('currentIndexF') === '/index'
+  },
+  updated() {
+    this.activeIndex = sessionStorage.getItem('currentIndexF')
+    this.isIndex = sessionStorage.getItem('currentIndexF') === '/index'
   }
 }
 </script>
@@ -292,6 +296,13 @@ export default {
         color: #ddd;
       }
     }
+  }
+}
+
+.indexS {
+  background-image: linear-gradient(to top right, #2d3436, #636e72);
+  .footer {
+    background-image: none;
   }
 }
 </style>

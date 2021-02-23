@@ -251,7 +251,7 @@ export default {
         return null
       } else {
         return {
-          userId: currentUr.id,
+          userid: currentUr.id,
           username: currentUr.username,
           title: currentSg.title,
           description: currentSg.description,

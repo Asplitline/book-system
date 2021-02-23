@@ -120,7 +120,6 @@ export default {
     async getAvatarById() {
       const file = await this.getFileById(this.currentUser.id)
       this.$set(this.currentUser, 'imgUrl', file.name)
-      console.log(this.currentUser)
     }
   },
   created() {

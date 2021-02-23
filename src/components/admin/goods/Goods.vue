@@ -40,7 +40,7 @@
     </el-row>
     <!-- 用户表单 -->
     <el-table :data="bookList" stripe style="width: 100%" max-height="500">
-      <el-table-column prop="bm" label="书籍编号" min-width="50">
+      <el-table-column prop="bm" label="书籍编号" min-width="150">
       </el-table-column>
       <el-table-column prop="name" label="书名" min-width="150">
       </el-table-column>
