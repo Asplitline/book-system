@@ -45,51 +45,50 @@
               :rules="userInfoRules"
               ref="userInfoForm"
               label-width="100px"
-              size="small "
+              size="small"
+              :hide-required-asterisk="true"
             >
               <el-form-item prop="name">
-                <span slot="label"><i class="icon-user iconfont"></i>姓名</span>
-                <el-input v-model="userInfoForm.name"></el-input>
-              </el-form-item>
-              <el-form-item prop="name">
                 <span slot="label"
-                  ><i class="icon-contacts iconfont"></i>学号</span
+                  ><i class="icon-contacts iconfont"></i>账号</span
                 >
-
-                <el-input v-model="userInfoForm.name"></el-input>
+                <el-input v-model="userInfoForm.username" disabled></el-input>
               </el-form-item>
+
               <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-tubiao215 iconfont"></i>QQ</span
-                >
-
+                <span slot="label"><i class="icon-user iconfont"></i>昵称</span>
                 <el-input v-model="userInfoForm.name"></el-input>
               </el-form-item>
+
               <el-form-item prop="name">
                 <span slot="label"
                   ><i class="icon-mobile iconfont"></i>手机号码</span
                 >
-
-                <el-input v-model="userInfoForm.name"></el-input>
+                <el-input v-model="userInfoForm.phone"></el-input>
               </el-form-item>
               <el-form-item prop="name">
                 <span slot="label"><i class="icon-mail iconfont"></i>邮箱</span>
-
-                <el-input v-model="userInfoForm.name"></el-input>
+                <el-input v-model="userInfoForm.email"></el-input>
               </el-form-item>
               <el-form-item prop="name">
                 <span slot="label"
                   ><i class="icon-camera1 iconfont"></i>头像</span
                 >
-
                 <el-upload
                   class="avatar-uploader"
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  :action="bindImg('util/uploadfile')"
                   :show-file-list="false"
-                  :on-success="handleAvatarSuccess"
-                  :before-upload="beforeAvatarUpload"
+                  :on-success="handleEditAvatarSuccess"
+                  name="files"
+                  :data="{ id: userInfoForm.fileId }"
                 >
-                  <img :src="bindUrl('T_2014_363.jpg')" class="avatar" />
+                  <img
+                    v-if="userInfoForm.imgUrl"
+                    :src="bindUrl(userInfoForm.imgUrl)"
+                    class="avatar"
+                    ref="preview"
+                  />
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-form-item>
               <el-form-item prop="name">
@@ -97,14 +96,16 @@
                   ><i class="icon-bulb iconfont"></i>自我描述</span
                 >
                 <el-input
-                  v-model="userInfoForm.name"
+                  v-model="userInfoForm.description"
                   type="textarea"
                   :autosize="{ minRows: 3, maxRows: 6 }"
                   resize="none"
                 ></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="success">修改</el-button>
+                <el-button type="success" @click="submitUserInfo()"
+                  >修改</el-button
+                >
               </el-form-item>
             </el-form>
           </div>
@@ -170,13 +171,45 @@
 </template>
 
 <script>
+import { mapMutations, mapActions } from 'vuex'
 export default {
   data() {
+    // 验证邮箱
+    const checkEmail = (rule, value, callback) => {
+      const regEmail = /^\w+@\w+(\.\w+)+$/
+      if (regEmail.test(value)) return callback()
+      callback(new Error('邮箱不合法'))
+    }
+    // 验证手机
+    const checkPhone = (rule, value, callback) => {
+      const regPhone = /^1[34578]\d{9}$/
+      if (regPhone.test(value)) return callback()
+      callback(new Error('手机号码不合法'))
+    }
     return {
       activeIndex: Number(sessionStorage.getItem('asideIndex')) || 1,
       // 1
       userInfoForm: {},
-      userInfoRules: {},
+      userInfoRules: {
+        username: [
+          { required: true, message: '输入账号', trigger: 'blur' },
+          { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '输入用户名', trigger: 'blur' },
+          { min: 3, max: 15, message: '长度在 3 到 15 个字符', trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: '输入电话号码', trigger: 'blur' },
+          { validator: checkPhone, trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '输入电子邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        imgUrl: [{ required: true, message: '选择头像', trigger: 'blur' }]
+      },
+      currentUser: {},
       // 2
       passwordForm: {},
       passwordRules: {},
@@ -185,13 +218,16 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['getFileById']),
+    ...mapMutations(['initUser']),
     // 设置当前选择菜单
     setActive(index) {
       this.activeIndex = index
     },
     // 修改头像
-    handleAvatarSuccess() {},
-    beforeAvatarUpload() {},
+    handleEditAvatarSuccess(res, file) {
+      this.userInfoForm.imgUrl = file.name
+    },
     // 处理active
     handleActive() {
       switch (this.activeIndex) {
@@ -210,8 +246,28 @@ export default {
       }
     },
     // 1----
-    handleUserInfo() {
-      console.log(1)
+    async handleUserInfo() {
+      this.userInfoForm = this.convertDeepCopy(this.currentUser)
+      const file = await this.getFileById(this.userInfoForm.id)
+      this.$set(this.userInfoForm, 'imgUrl', file.name)
+      this.userInfoForm.fileId = file.id
+    },
+    async submitUserInfo() {
+      const { data, status } = await this.$http.put(
+        '/user/updateIgnoreNull',
+        this.userInfoForm
+      )
+      if (status === 200) {
+        if (data.success) {
+          this.initUser(this.userInfoForm)
+          this.currentUser = this.convertDeepCopy(this.userInfoForm)
+          this.$message.success('修改成功')
+        } else {
+          this.$message.error('修改失败')
+        }
+      } else {
+        this.$message.waring('请求失败')
+      }
     },
     // 2----
     handleChangePassword() {
@@ -237,6 +293,7 @@ export default {
   },
   created() {
     this.handleActive()
+    this.currentUser = this.$store.state.user
   }
 }
 </script>

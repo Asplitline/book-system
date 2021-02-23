@@ -134,7 +134,10 @@ export default {
         if (data.success) {
           this.$message.success('登录成功')
           this.isLoginDiaglog = false
-          this.$cookies.set('token', `username=${data.data.username}`)
+          this.$cookies.set(
+            'token',
+            `username=${data.data.username}`
+          )
           this.initUser(data.data)
           this.getLoginStatus()
         }

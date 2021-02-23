@@ -20,9 +20,9 @@ axios.defaults.baseURL = 'http://127.0.0.1:8088/'
 // 携带cookie
 axios.defaults.withCredentials = true
 axios.interceptors.request.use(conf => {
-  if (Vue.$cookies.get('token')) {
-    conf.headers.Cookie = Vue.$cookies.get('token')
-  }
+  // if (Vue.$cookies.get('token')) {
+  //   conf.headers.Cookie = Vue.$cookies.get('token')
+  // }
   return conf
 }, error => {
   return Promise.reject(error)

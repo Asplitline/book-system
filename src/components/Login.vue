@@ -62,12 +62,22 @@ export default {
         const pwdURL = this.toURL(this.loginForm)
         const { data, status } = await this.$http.post(
           '/account/api/login',
-          pwdURL
+          pwdURL,
+          { withCredentials: true }
         )
         if (status === 200) {
           if (data.success) {
             this.$message.success('登录成功')
-            this.$cookies.set('token', `username=${data.data.username}`)
+            // this.$cookies.set('token', `username=${data.data.username}`)
+            this.$cookies.set(
+              'token',
+              `username=${data.data.username}`,
+              null,
+              null,
+              null,
+              null,
+              'none'
+            )
             this.initUser(data.data)
             this.$router.push('/admin')
           } else this.$message.error('登录失败')
