@@ -3,19 +3,12 @@
     <el-container class="main-container">
       <el-header>
         <div>
-          <el-menu
-            class="el-menu-demo"
-            mode="horizontal"
-            background-color="#444444"
-            text-color="#eee"
-            active-text-color="#ffd04b"
-          >
-            <el-menu-item
+          <el-menu class="el-menu-demo" mode="horizontal" background-color="#444444"
+            text-color="#eee" active-text-color="#ffd04b">
+            <!-- <el-menu-item
               ><img src="../assets/logo.png" alt="" class="logo"
-            /></el-menu-item>
-            <el-menu-item class="logo-title"
-              >成都东软学院图书借阅系统 - 后台</el-menu-item
-            >
+            /></el-menu-item> -->
+            <el-menu-item class="logo-title">成都东软学院图书借阅系统 - 后台</el-menu-item>
             <el-submenu class="user-info" index="1">
               <template slot="title">
                 <img :src="bindUrl(currentUser.imgUrl)" class="avatar" />
@@ -24,9 +17,8 @@
               <!-- <el-menu-item
                 ><i class="icon-user iconfont"></i>个人中心</el-menu-item
               > -->
-              <el-menu-item @click="logout"
-                ><i class="icon-export iconfont"></i>退出系统</el-menu-item
-              >
+              <el-menu-item @click="logout"><i class="icon-export iconfont"></i>退出系统
+              </el-menu-item>
             </el-submenu>
           </el-menu>
         </div>
@@ -35,15 +27,9 @@
       <el-container>
         <el-aside :width="isCollapse ? '64px' : '260px'">
           <div class="toggle-menu" @click="toToggleMenu">|||</div>
-          <el-menu
-            :default-active="activePath"
-            background-color="#fff"
-            text-color="#000"
-            active-text-color="#F56C6C"
-            :collapse="isCollapse"
-            :collapse-transition="false"
-            router
-          >
+          <el-menu :default-active="activePath" background-color="#fff" text-color="#000"
+            active-text-color="#F56C6C" :collapse="isCollapse"
+            :collapse-transition="false" router>
             <el-menu-item index="/_user" @click="saveActiveMenu('/_user')">
               <i class="iconfont icon-user"></i>
               <span slot="title">用户管理</span>
@@ -52,10 +38,7 @@
               <i class="iconfont icon-unorderedlist"></i>
               <span slot="title">图书管理</span>
             </el-menu-item>
-            <el-menu-item
-              index="/_suggest"
-              @click="saveActiveMenu('/_suggest')"
-            >
+            <el-menu-item index="/_suggest" @click="saveActiveMenu('/_suggest')">
               <i class="iconfont icon-edit"></i>
               <span slot="title">投诉管理</span>
             </el-menu-item>

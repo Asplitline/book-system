@@ -3,41 +3,26 @@
     <el-container>
       <!-- 头部导航 -->
       <el-header v-show="!isIndex">
-        <el-menu
-          :default-active="activeIndex"
-          class="w"
-          mode="horizontal"
-          background-color="#444444"
-          text-color="#eee"
-          active-text-color="#ffd04b"
-          router
-        >
+        <el-menu :default-active="activeIndex" class="w" mode="horizontal"
+          background-color="#444444" text-color="#eee" active-text-color="#ffd04b" router>
           <!-- @select="handleSelect" -->
-          <a href="javascript:;" class="logo">
+          <!-- <a href="javascript:;" class="logo">
             <img src="../assets/logo.png" alt="" height="50" />
-          </a>
-          <el-menu-item index="/index"
-            ><i class="icon-home iconfont"></i>首页</el-menu-item
-          >
-          <el-menu-item index="/borrow"
-            ><i class="icon-unorderedlist iconfont"></i>借阅中心</el-menu-item
-          >
-          <el-menu-item index="/suggest"
-            ><i class="icon-calendar-check iconfont"></i>投诉建议</el-menu-item
-          >
-          <el-menu-item index="/repair"
-            ><i class="icon-setting iconfont"></i>损坏保修</el-menu-item
-          >
+          </a> -->
+          <el-menu-item index="/index"><i class="icon-home iconfont"></i>首页</el-menu-item>
+          <el-menu-item index="/borrow"><i class="icon-unorderedlist iconfont"></i>借阅中心
+          </el-menu-item>
+          <el-menu-item index="/suggest"><i class="icon-calendar-check iconfont"></i>投诉建议
+          </el-menu-item>
+          <el-menu-item index="/repair"><i class="icon-setting iconfont"></i>损坏保修
+          </el-menu-item>
           <!-- <el-menu-item index="/post"
             ><i class="icon-solution iconfont"></i>帖子中心</el-menu-item
           > -->
-          <el-menu-item index="/info"
-            ><i class="icon-user iconfont"></i>个人中心</el-menu-item
-          >
+          <el-menu-item index="/info"><i class="icon-user iconfont"></i>个人中心
+          </el-menu-item>
           <div class="login">
-            <a href="javascript:;" v-if="isLogin" @click="showLoginDialog"
-              >登录</a
-            >
+            <a href="javascript:;" v-if="isLogin" @click="showLoginDialog">登录</a>
             <a href="javascript:;" v-else @click="logOut">注销</a>
           </div>
         </el-menu>
@@ -53,41 +38,22 @@
       </el-footer>
     </el-container>
     <!-- 对话框 -->
-    <el-dialog
-      :visible.sync="isLoginDiaglog"
-      width="24%"
-      class="loginDialog"
-      :close-on-click-modal="false"
-      @close="clearDialog('loginForm')"
-    >
-      <el-form
-        :model="loginForm"
-        :rules="loginRules"
-        ref="loginForm"
-        size="small"
-      >
+    <el-dialog :visible.sync="isLoginDiaglog" width="24%" class="loginDialog"
+      :close-on-click-modal="false" @close="clearDialog('loginForm')">
+      <el-form :model="loginForm" :rules="loginRules" ref="loginForm" size="small">
         <h4 content-position="left" class="title">登录界面</h4>
         <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            prefix-icon="el-icon-user"
-            placeholder="输入用户名"
-          ></el-input>
+          <el-input v-model="loginForm.username" prefix-icon="el-icon-user"
+            placeholder="输入用户名"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            prefix-icon="el-icon-lock"
-            placeholder="输入密码"
-          ></el-input>
+          <el-input v-model="loginForm.password" type="password"
+            prefix-icon="el-icon-lock" placeholder="输入密码"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="isLoginDiaglog = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="verifyLogin()" size="mini"
-          >登 录</el-button
-        >
+        <el-button type="primary" @click="verifyLogin()" size="mini">登 录</el-button>
       </span>
     </el-dialog>
   </div>

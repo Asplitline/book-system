@@ -5,6 +5,12 @@
 </template>
 
 <script>
+/**
+ * home
+ * book 
+ * message 留言板
+ * 
+ */
 export default {
   name: 'app'
 }
