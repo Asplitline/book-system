@@ -1,26 +1,15 @@
 <template>
   <div class="login">
     <div class="login-box">
-      <el-form
-        class="login-form"
-        :model="loginForm"
-        :rules="loginFormRules"
-        ref="loginForm"
-      >
+      <el-form class="login-form" :model="loginForm" :rules="loginFormRules"
+        ref="loginForm">
         <el-form-item prop="username">
-          <el-input
-            prefix-icon="el-icon-user-solid"
-            v-model="loginForm.username"
-          >
+          <el-input prefix-icon="el-icon-user-solid" v-model="loginForm.username">
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            prefix-icon="el-icon-lock"
-            v-model="loginForm.password"
-            type="password"
-            @keyup.enter.native="submitForm"
-          ></el-input>
+          <el-input prefix-icon="el-icon-lock" v-model="loginForm.password"
+            type="password" @keyup.enter.native="submitForm"></el-input>
         </el-form-item>
         <el-form-item class="btns">
           <el-button type="info" @click="resetForm">重置</el-button>

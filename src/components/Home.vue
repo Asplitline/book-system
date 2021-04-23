@@ -3,41 +3,26 @@
     <el-container>
       <!-- 头部导航 -->
       <el-header v-show="!isIndex">
-        <el-menu
-          :default-active="activeIndex"
-          class="w"
-          mode="horizontal"
-          background-color="#444444"
-          text-color="#eee"
-          active-text-color="#ffd04b"
-          router
-        >
+        <el-menu :default-active="activeIndex" class="w" mode="horizontal"
+          background-color="#444444" text-color="#eee" active-text-color="#ffd04b" router>
           <!-- @select="handleSelect" -->
           <a href="javascript:;" class="logo">
             <img src="../assets/logo.png" alt="" height="50" />
           </a>
-          <el-menu-item index="/index"
-            ><i class="icon-home iconfont"></i>首页</el-menu-item
-          >
-          <el-menu-item index="/borrow"
-            ><i class="icon-unorderedlist iconfont"></i>借阅中心</el-menu-item
-          >
-          <el-menu-item index="/suggest"
-            ><i class="icon-calendar-check iconfont"></i>投诉建议</el-menu-item
-          >
-          <el-menu-item index="/repair"
-            ><i class="icon-setting iconfont"></i>损坏保修</el-menu-item
-          >
+          <el-menu-item index="/index"><i class="icon-home iconfont"></i>首页</el-menu-item>
+          <el-menu-item index="/borrow"><i class="icon-unorderedlist iconfont"></i>借阅中心
+          </el-menu-item>
+          <el-menu-item index="/suggest"><i class="icon-calendar-check iconfont"></i>投诉建议
+          </el-menu-item>
+          <el-menu-item index="/repair"><i class="icon-setting iconfont"></i>损坏保修
+          </el-menu-item>
           <!-- <el-menu-item index="/post"
             ><i class="icon-solution iconfont"></i>帖子中心</el-menu-item
           > -->
-          <el-menu-item index="/info"
-            ><i class="icon-user iconfont"></i>个人中心</el-menu-item
-          >
+          <el-menu-item index="/info"><i class="icon-user iconfont"></i>个人中心
+          </el-menu-item>
           <div class="login">
-            <a href="javascript:;" v-if="isLogin" @click="showLoginDialog"
-              >登录</a
-            >
+            <a href="javascript:;" v-if="!isLogin" @click="showLoginDialog">登录</a>
             <a href="javascript:;" v-else @click="logOut">注销</a>
           </div>
         </el-menu>
@@ -53,41 +38,28 @@
       </el-footer>
     </el-container>
     <!-- 对话框 -->
-    <el-dialog
-      :visible.sync="isLoginDiaglog"
-      width="24%"
-      class="loginDialog"
-      :close-on-click-modal="false"
-      @close="clearDialog('loginForm')"
-    >
-      <el-form
-        :model="loginForm"
-        :rules="loginRules"
-        ref="loginForm"
-        size="small"
-      >
-        <h4 content-position="left" class="title">登录界面</h4>
+    <el-dialog :visible.sync="isLoginDialog" width="24%" class="loginDialog"
+      :close-on-click-modal="false" :show-close="false">
+      <el-form :model="form" :rules="rules" ref="form" size="small">
+        <h4 content-position="left" class="title">{{loginIndex?'登录界面':'注册界面'}}</h4>
         <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            prefix-icon="el-icon-user"
-            placeholder="输入用户名"
-          ></el-input>
+          <el-input v-model="form.username" prefix-icon="el-icon-user"
+            placeholder="输入用户名"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            prefix-icon="el-icon-lock"
-            placeholder="输入密码"
-          ></el-input>
+          <el-input v-model="form.password" type="password" prefix-icon="el-icon-lock"
+            placeholder="输入密码"></el-input>
+        </el-form-item>
+        <el-form-item prop="confirmPassword" v-if="!loginIndex">
+          <el-input v-model="form.confirmPassword" type="password"
+            prefix-icon="el-icon-lock" placeholder="再次输入密码"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isLoginDiaglog = false" size="mini">取 消</el-button>
-        <el-button type="primary" @click="verifyLogin()" size="mini"
-          >登 录</el-button
-        >
+        <el-button type="info" @click="toggleIndex()" size="mini">{{loginIndex?'注册':'登录'}}
+        </el-button>
+        <el-button type="primary" @click="submitForm()" size="mini">
+          {{loginIndex?'登录':'注册'}}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -95,22 +67,43 @@
 
 <script>
 // @ is an alias to /src
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   name: 'Home',
   data() {
+    const checkPassword = (rule, value, callback) => {
+      const oVal = value.trim()
+      const nVal = this.form.password.trim()
+      // console.log(oVal, nVal)
+      if (nVal.length === 0) {
+        return callback(new Error('确认密码不能为空'))
+      } else if (oVal !== nVal) {
+        return callback(new Error('新旧密码不一致'))
+      } else {
+        return callback()
+      }
+    }
     return {
       activeIndex: sessionStorage.getItem('currentIndexF'),
-      isLoginDiaglog: false,
-      loginForm: {},
-      loginRules: {
+      isLoginDialog: false,
+      form: {
+        password: '',
+        username: '',
+        confirmPassword: ''
+      },
+      rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        confirmPassword: [
+          {
+            validator: checkPassword
+          }
+        ]
       },
-      isLogin: false,
-      isIndex: false
+      isIndex: false,
+      loginIndex: true
     }
   },
   methods: {
@@ -121,27 +114,46 @@ export default {
       if (user) {
         this.$message.warning('用户已登录')
       } else {
-        this.isLoginDiaglog = true
+        this.isLoginDialog = true
       }
     },
     // 登录验证
-    async verifyLogin() {
-      const pwdURL = this.toURL(this.loginForm)
-      const { status, data } = await this.$http.post(
-        '/account/api/login',
-        pwdURL
-      )
-      if (status === 200) {
-        if (data.success) {
-          this.$message.success('登录成功')
-          this.isLoginDiaglog = false
-          this.$cookies.set('token', `username=${data.data.username}`)
-          this.initUser(data.data)
-          this.getLoginStatus()
+    async submitForm() {
+      this.$refs.form.validate(async (valid) => {
+        if (!valid) return
+        if (this.loginIndex) {
+          console.log(123)
+          const pwdURL = this.toURL(this.form)
+          const { status, data } = await this.$http.post(
+            '/account/api/login',
+            pwdURL
+          )
+          if (status === 200) {
+            if (data.success) {
+              this.isLoginDialog = false
+              this.$refs.form.resetFields()
+              this.initUser(data.data)
+            } else {
+              this.$message.error('登录失败')
+            }
+          }
+        } else {
+          this.form.createTime = Date.now()
+          this.form.updateTime = Date.now()
+          this.form.level = 0
+          const { data } = await this.$http.post(
+            '/account/api/regist',
+            this.form
+          )
+          const { success } = data
+          if (success) {
+            this.$message.success('注册成功..请开始登录吧！')
+            this.toggleIndex()
+          } else {
+            this.$message.error('注册失败')
+          }
         }
-      } else {
-        this.$message.warning('请求失败')
-      }
+      })
     },
     // 注销
     logOut() {
@@ -152,28 +164,28 @@ export default {
         center: true
       })
         .then(async () => {
+          this.isLoginDialog = true
           sessionStorage.clear('userInfo')
-          this.getLoginStatus()
+          // this.getLoginStatus()
           this.$message.success('注销成功')
+          this.$router.push('/index')
         })
         .catch(() => {
           this.$message.info('已取消')
         })
     },
-    // 获取当前登录状态
-    getLoginStatus() {
-      this.$store.commit(
-        'initLoginStatus',
-        sessionStorage.getItem('userInfo') === null
-      )
-      this.isLogin = this.$store.state.isLogin
+    toggleIndex() {
+      const lgRef = this.$refs.form
+      lgRef && lgRef.resetFields()
+      this.loginIndex = !this.loginIndex
     },
-    clearDialog(formName) {
-      this.$refs[formName].resetFields()
-    }
+    submitRegister() {}
+  },
+  computed: {
+    ...mapGetters(['isLogin'])
   },
   created() {
-    this.getLoginStatus()
+    this.isLoginDialog = !this.isLogin
     this.activeIndex = sessionStorage.getItem('currentIndexF')
     this.isIndex = sessionStorage.getItem('currentIndexF') === '/index'
   },
@@ -298,11 +310,21 @@ export default {
     }
   }
 }
-
+.el-button {
+  margin-right: 10px;
+  & + .el-button {
+    margin-right: 30px;
+    margin-left: 0;
+  }
+}
 .indexS {
   background-image: linear-gradient(to top right, #2d3436, #636e72);
   .footer {
     background-image: none;
   }
+}
+
+/deep/.el-form-item__error {
+  left: 16px;
 }
 </style>

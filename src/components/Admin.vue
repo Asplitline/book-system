@@ -3,19 +3,11 @@
     <el-container class="main-container">
       <el-header>
         <div>
-          <el-menu
-            class="el-menu-demo"
-            mode="horizontal"
-            background-color="#444444"
-            text-color="#eee"
-            active-text-color="#ffd04b"
-          >
-            <el-menu-item
-              ><img src="../assets/logo.png" alt="" class="logo"
-            /></el-menu-item>
-            <el-menu-item class="logo-title"
-              >成都东软学院图书借阅系统 - 后台</el-menu-item
-            >
+          <el-menu class="el-menu-demo" mode="horizontal" background-color="#444444"
+            text-color="#eee" active-text-color="#ffd04b">
+            <!-- <el-menu-item><img src="../assets/logo.png" alt="" class="logo" />
+            </el-menu-item> -->
+            <el-menu-item class="logo-title">成都东软学院图书管理系统 - 后台</el-menu-item>
             <el-submenu class="user-info" index="1">
               <template slot="title">
                 <img :src="bindUrl(currentUser.imgUrl)" class="avatar" />
@@ -24,9 +16,8 @@
               <!-- <el-menu-item
                 ><i class="icon-user iconfont"></i>个人中心</el-menu-item
               > -->
-              <el-menu-item @click="logout"
-                ><i class="icon-export iconfont"></i>退出系统</el-menu-item
-              >
+              <el-menu-item @click="logout"><i class="icon-export iconfont"></i>退出系统
+              </el-menu-item>
             </el-submenu>
           </el-menu>
         </div>
@@ -35,31 +26,22 @@
       <el-container>
         <el-aside :width="isCollapse ? '64px' : '260px'">
           <div class="toggle-menu" @click="toToggleMenu">|||</div>
-          <el-menu
-            :default-active="activePath"
-            background-color="#fff"
-            text-color="#000"
-            active-text-color="#F56C6C"
-            :collapse="isCollapse"
-            :collapse-transition="false"
-            router
-          >
-            <el-menu-item index="/_user" @click="saveActiveMenu('/_user')">
+          <el-menu :default-active="activePath" background-color="#fff" text-color="#000"
+            active-text-color="#F56C6C" :collapse="isCollapse"
+            :collapse-transition="false" router>
+            <el-menu-item index="/_user">
               <i class="iconfont icon-user"></i>
               <span slot="title">用户管理</span>
             </el-menu-item>
-            <el-menu-item index="/_goods" @click="saveActiveMenu('/_goods')">
+            <el-menu-item index="/_goods">
               <i class="iconfont icon-unorderedlist"></i>
               <span slot="title">图书管理</span>
             </el-menu-item>
-            <el-menu-item
-              index="/_suggest"
-              @click="saveActiveMenu('/_suggest')"
-            >
+            <el-menu-item index="/_suggest">
               <i class="iconfont icon-edit"></i>
               <span slot="title">投诉管理</span>
             </el-menu-item>
-            <el-menu-item index="/_repair" @click="saveActiveMenu('/_repair')">
+            <el-menu-item index="/_repair">
               <i class="iconfont icon-setting"></i>
               <span slot="title">报修管理</span>
             </el-menu-item>
@@ -67,11 +49,11 @@
               <i class="iconfont icon-solution"></i>
               <span slot="title">帖子管理</span>
             </el-menu-item> -->
-            <el-menu-item index="/_borrow" @click="saveActiveMenu('/_borrow')">
+            <el-menu-item index="/_borrow">
               <i class="iconfont icon-upload"></i>
               <span slot="title">借还管理</span>
             </el-menu-item>
-            <el-menu-item index="/_log" @click="saveActiveMenu('/_log')">
+            <el-menu-item index="/_log">
               <i class="iconfont icon-send"></i>
               <span slot="title">日志管理</span>
             </el-menu-item>
@@ -119,7 +101,9 @@ export default {
     // 获取用户头像
     async getAvatarById() {
       const file = await this.getFileById(this.currentUser.id)
-      this.$set(this.currentUser, 'imgUrl', file.name)
+      if (file) {
+        this.$set(this.currentUser, 'imgUrl', file.name)
+      }
     }
   },
   created() {

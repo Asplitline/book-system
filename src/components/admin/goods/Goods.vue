@@ -12,30 +12,14 @@
     <!-- 搜索框 -->
     <el-row class="mixInp" :gutter="20">
       <el-col :span="6">
-        <el-input
-          placeholder="请输入内容"
-          v-model="query.keyword"
-          class="input-with-select"
-          clearable
-          @clear="getBooks()"
-          size="small"
-        >
-          <el-button
-            slot="append"
-            icon="el-icon-search"
-            @click="getBooks()"
-          ></el-button>
+        <el-input placeholder="请输入内容" v-model="query.keyword" class="input-with-select"
+          clearable @clear="getBooks()" size="small">
+          <el-button slot="append" icon="el-icon-search" @click="getBooks()"></el-button>
         </el-input>
       </el-col>
       <el-col :span="4">
-        <el-button
-          type="success"
-          size="small"
-          @click="showAddBookDialog()"
-          plain
-        >
-          添加书籍</el-button
-        >
+        <el-button type="success" size="small" @click="showAddBookDialog()" plain>
+          添加书籍</el-button>
       </el-col>
     </el-row>
     <!-- 用户表单 -->
@@ -52,77 +36,34 @@
       </el-table-column>
       <el-table-column label="操作" min-width="150">
         <template v-slot="{ row }">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="修改书籍"
-            placement="top"
-            :enterable="false"
-          >
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="small"
-              @click="showEditBookDialog(row)"
-            ></el-button>
+          <el-tooltip class="item" effect="dark" content="修改书籍" placement="top"
+            :enterable="false">
+            <el-button type="primary" icon="el-icon-edit" size="small"
+              @click="showEditBookDialog(row)"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="删除书籍"
-            placement="top"
-            :enterable="false"
-          >
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="small"
-              @click="deleteBookById(row.id)"
-            ></el-button>
+          <el-tooltip class="item" effect="dark" content="删除书籍" placement="top"
+            :enterable="false">
+            <el-button type="danger" icon="el-icon-delete" size="small"
+              @click="deleteBookById(row.id)"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="书籍详情"
-            placement="top"
-            :enterable="false"
-          >
-            <el-button
-              type="warning"
-              icon="el-icon-tickets"
-              size="small"
-              @click="showBookDetail(row)"
-            ></el-button>
+          <el-tooltip class="item" effect="dark" content="书籍详情" placement="top"
+            :enterable="false">
+            <el-button type="warning" icon="el-icon-tickets" size="small"
+              @click="showBookDetail(row)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="query.page"
-      :page-sizes="[1, 2, 5, 10]"
-      :page-size="query.size"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-    >
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+      :current-page="query.page" :page-sizes="[1, 2, 5, 10]" :page-size="query.size"
+      layout="total, sizes, prev, pager, next, jumper" :total="total">
     </el-pagination>
     <!-- 添加书籍对话框 -->
-    <el-dialog
-      :visible.sync="isAddBookDialog"
-      width="30%"
-      class="book-dialog"
-      @close="clearDialog('addBookForm')"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="addBookForm"
-        :rules="bookRules"
-        ref="addBookForm"
-        size="mini"
-        :hide-required-asterisk="true"
-      >
+    <el-dialog :visible.sync="isAddBookDialog" width="30%" class="book-dialog"
+      @close="clearDialog('addBookForm')" :close-on-click-modal="false">
+      <el-form :model="addBookForm" :rules="bookRules" ref="addBookForm" size="mini"
+        :hide-required-asterisk="true">
         <el-form-item label="书名" prop="name">
           <el-input v-model="addBookForm.name"></el-input>
         </el-form-item>
@@ -137,67 +78,34 @@
         </el-form-item>
         <el-form-item label="分类" prop="lx">
           <el-select v-model="addBookForm.lx" placeholder="请选择">
-            <el-option
-              v-for="item in options"
-              :key="item"
-              :label="item"
-              :value="item"
-            >
+            <el-option v-for="item in options" :key="item" :label="item" :value="item">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="简介" prop="description">
-          <el-input
-            v-model="addBookForm.description"
-            type="textarea"
-            resize="none"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-          ></el-input>
+          <el-input v-model="addBookForm.description" type="textarea" resize="none"
+            :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="封面" prop="imageUrl">
-          <el-upload
-            class="avatar-uploader"
-            :action="bindImg('util/uploadfile')"
-            :show-file-list="false"
-            :on-success="handleAddAvatarSuccess"
-            name="files"
-          >
-            <img
-              v-if="addBookForm.imageUrl"
-              :src="bindUrl(addBookForm.imageUrl)"
-              class="avatar"
-            />
+          <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+            :show-file-list="false" :on-success="handleAddAvatarSuccess" name="files">
+            <img v-if="addBookForm.imageUrl" :src="bindUrl(addBookForm.imageUrl)"
+              class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isAddBookDialog = false" size="small"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="submitBookForm('addBookForm')"
-          size="small"
-          >添 加</el-button
-        >
+        <el-button @click="isAddBookDialog = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="submitBookForm('addBookForm')" size="small">添 加
+        </el-button>
       </span>
     </el-dialog>
     <!-- 修改书籍对话框 -->
-    <el-dialog
-      :visible.sync="isEditBookDialog"
-      width="30%"
-      class="book-dialog"
-      @close="clearDialog('editBookForm')"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="editBookForm"
-        :rules="bookRules"
-        ref="editBookForm"
-        size="mini"
-        :hide-required-asterisk="true"
-      >
+    <el-dialog :visible.sync="isEditBookDialog" width="30%" class="book-dialog"
+      @close="clearDialog('editBookForm')" :close-on-click-modal="false">
+      <el-form :model="editBookForm" :rules="bookRules" ref="editBookForm" size="mini"
+        :hide-required-asterisk="true">
         <el-form-item label="书名" prop="name">
           <el-input v-model="editBookForm.name"></el-input>
         </el-form-item>
@@ -212,51 +120,28 @@
         </el-form-item>
         <el-form-item label="分类" prop="lx">
           <el-select v-model="editBookForm.lx" placeholder="请选择">
-            <el-option
-              v-for="item in options"
-              :key="item"
-              :label="item"
-              :value="item"
-            >
+            <el-option v-for="item in options" :key="item" :label="item" :value="item">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="简介" prop="description">
-          <el-input
-            v-model="editBookForm.description"
-            type="textarea"
-            resize="none"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-          ></el-input>
+          <el-input v-model="editBookForm.description" type="textarea" resize="none"
+            :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="封面" prop="imageUrl">
-          <el-upload
-            class="avatar-uploader"
-            :action="bindImg('util/uploadfile')"
-            :show-file-list="false"
-            :on-success="handleEditAvatarSuccess"
-            name="files"
-            :data="{ id: editBookForm.fileId }"
-          >
-            <img
-              v-if="editBookForm.imageUrl"
-              :src="bindUrl(editBookForm.imageUrl)"
-              class="avatar"
-            />
+          <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+            :show-file-list="false" :on-success="handleEditAvatarSuccess" name="files"
+            :data="{ id: editBookForm.fileId }">
+            <img v-if="editBookForm.imageUrl" :src="bindUrl(editBookForm.imageUrl)"
+              class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isEditBookDialog = false" size="small"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="submitBookForm('editBookForm')"
-          size="small"
-          >修 改</el-button
-        >
+        <el-button @click="isEditBookDialog = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="submitBookForm('editBookForm')" size="small">修 改
+        </el-button>
       </span>
     </el-dialog>
     <!-- 书籍详情 -->
@@ -390,7 +275,7 @@ export default {
       this.editBookForm = this.convertDeepCopy(formData)
       const file = await this.getFileById(this.editBookForm.id)
       this.$set(this.editBookForm, 'imageUrl', file.name)
-      this.editBookForm.fileId = file.id
+      this.editBookForm.fileId = this.editBookForm.id
     },
     // 书籍详情
     async showBookDetail(formData) {
@@ -505,7 +390,7 @@ export default {
 
 <style lang="less" scoped>
 .book-dialog {
-  overflow: hidden;
+  // overflow: hidden;
   /deep/.el-dialog__body {
     padding: 20px;
   }

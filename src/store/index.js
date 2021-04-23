@@ -7,8 +7,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     user: JSON.parse(sessionStorage.getItem('userInfo')),
-    currentImg: '',
-    isLogin: false
+    currentImg: ''
   },
   mutations: {
     initUser (state, data) {
@@ -17,10 +16,11 @@ export default new Vuex.Store({
     },
     initImg (state, { data }) {
       state.currentImg = data.length > 0 ? data[0].filename : ''
-    },
-    initLoginStatus (state, flag) {
-      state.isLogin = flag
     }
+    // ,
+    // initLoginStatus (state, flag) {
+    //   state.isLogin = flag
+    // }
   },
   actions: {
     async getFileById ({ commit }, id) {
@@ -29,10 +29,11 @@ export default new Vuex.Store({
           id
         }
       })
+      // console.log(data.length, '11111111')
       if (data.length > 0) {
         return { name: data[0].filename, id: data[0].id }
       } else {
-        return { name: 'default_pic.png' }
+        return null
       }
     },
     async getBookById ({ commit }, id) {
@@ -42,6 +43,11 @@ export default new Vuex.Store({
         }
       })
       return data
+    }
+  },
+  getters: {
+    isLogin: state => {
+      return state.user !== null
     }
   },
   modules: {

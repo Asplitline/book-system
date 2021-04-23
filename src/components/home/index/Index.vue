@@ -1,6 +1,6 @@
 <template>
   <div class="index">
-    <h1>成都东软学院在线考试教学辅助系统</h1>
+    <h1>成都东软学院图书管理系统</h1>
     <div class="btns">
       <a class="items" href="#/borrow">
         <i class="icon-unorderedlist iconfont"></i>

@@ -14,24 +14,20 @@
         <el-card class="menu-nav">
           <ul>
             <li @click="setActive(1)">
-              <a href="javascript:;" :class="{ active: activeIndex === 1 }"
-                ><i class="iconfont icon-user">个人信息</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 1 }"><i
+                  class="iconfont icon-user">个人信息</i></a>
             </li>
             <li @click="setActive(2)">
-              <a href="javascript:;" :class="{ active: activeIndex === 2 }"
-                ><i class="iconfont icon-edit-square">更改密码</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 2 }"><i
+                  class="iconfont icon-edit-square">更改密码</i></a>
             </li>
             <li @click="setActive(3)">
-              <a href="javascript:;" :class="{ active: activeIndex === 3 }"
-                ><i class="iconfont icon-unorderedlist">借阅记录</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 3 }"><i
+                  class="iconfont icon-unorderedlist">借阅记录</i></a>
             </li>
             <li @click="setActive(4)">
-              <a href="javascript:;" :class="{ active: activeIndex === 4 }"
-                ><i class="iconfont icon-solution">投诉记录</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 4 }"><i
+                  class="iconfont icon-solution">投诉记录</i></a>
             </li>
           </ul>
         </el-card>
@@ -40,18 +36,10 @@
         <el-card class="content">
           <!-- 用户信息 -->
           <div class="edit-info" v-if="activeIndex === 1">
-            <el-form
-              :model="userInfoForm"
-              :rules="userInfoRules"
-              ref="userInfoForm"
-              label-width="100px"
-              size="small"
-              :hide-required-asterisk="true"
-            >
-              <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-contacts iconfont"></i>账号</span
-                >
+            <el-form :model="userInfoForm" :rules="userInfoRules" ref="userInfoForm"
+              label-width="100px" size="small" :hide-required-asterisk="true">
+              <el-form-item prop="username">
+                <span slot="label"><i class="icon-contacts iconfont"></i>账号</span>
                 <el-input v-model="userInfoForm.username" disabled></el-input>
               </el-form-item>
 
@@ -60,98 +48,54 @@
                 <el-input v-model="userInfoForm.name"></el-input>
               </el-form-item>
 
-              <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-mobile iconfont"></i>手机号码</span
-                >
+              <el-form-item prop="phone">
+                <span slot="label"><i class="icon-mobile iconfont"></i>手机号码</span>
                 <el-input v-model="userInfoForm.phone"></el-input>
               </el-form-item>
-              <el-form-item prop="name">
+              <el-form-item prop="email">
                 <span slot="label"><i class="icon-mail iconfont"></i>邮箱</span>
                 <el-input v-model="userInfoForm.email"></el-input>
               </el-form-item>
-              <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-camera1 iconfont"></i>头像</span
-                >
-                <el-upload
-                  class="avatar-uploader"
-                  :action="bindImg('util/uploadfile')"
-                  :show-file-list="false"
-                  :on-success="handleEditAvatarSuccess"
-                  name="files"
-                  :data="{ id: userInfoForm.fileId }"
-                >
-                  <img
-                    v-if="userInfoForm.imgUrl"
-                    :src="bindUrl(userInfoForm.imgUrl)"
-                    class="avatar"
-                    ref="preview"
-                  />
+              <el-form-item prop="imgUrl">
+                <span slot="label"><i class="icon-camera1 iconfont"></i>头像</span>
+                <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+                  :show-file-list="false" :on-success="handleEditAvatarSuccess"
+                  name="files" :data="{ id: userInfoForm.fileId }">
+                  <img v-if="userInfoForm.imgUrl" :src="bindUrl(userInfoForm.imgUrl)"
+                    class="avatar" ref="preview" />
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-form-item>
-              <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-bulb iconfont"></i>自我描述</span
-                >
-                <el-input
-                  v-model="userInfoForm.description"
-                  type="textarea"
-                  :autosize="{ minRows: 3, maxRows: 6 }"
-                  resize="none"
-                ></el-input>
+              <el-form-item prop="description">
+                <span slot="label"><i class="icon-bulb iconfont"></i>自我描述</span>
+                <el-input v-model="userInfoForm.description" type="textarea"
+                  :autosize="{ minRows: 3, maxRows: 6 }" resize="none"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="success" @click="submitUserInfo()"
-                  >修改</el-button
-                >
+                <el-button type="success" @click="submitUserInfo()">修改</el-button>
               </el-form-item>
             </el-form>
           </div>
           <!-- 修改密码 -->
           <div class="edit-password" v-else-if="activeIndex === 2">
-            <el-form
-              :model="passwordForm"
-              :rules="passwordRules"
-              ref="passwordForm"
-              size="small"
-              label-width="100px"
-              :hide-required-asterisk="true"
-            >
+            <el-form :model="passwordForm" :rules="passwordRules" ref="passwordForm"
+              size="small" label-width="100px" :hide-required-asterisk="true">
               <el-form-item prop="oldPassword">
-                <span slot="label"
-                  ><i class="icon-lock iconfont"></i>旧密码</span
-                >
-                <el-input
-                  v-model="passwordForm.oldPassword"
-                  type="password"
-                ></el-input>
+                <span slot="label"><i class="icon-lock iconfont"></i>旧密码</span>
+                <el-input v-model="passwordForm.oldPassword" type="password"></el-input>
               </el-form-item>
               <el-form-item prop="newPassword">
-                <span slot="label"
-                  ><i class="icon-lock iconfont"></i>新密码</span
-                >
-                <el-input
-                  v-model="passwordForm.newPassword"
-                  type="password"
-                ></el-input>
+                <span slot="label"><i class="icon-lock iconfont"></i>新密码</span>
+                <el-input v-model="passwordForm.newPassword" type="password"></el-input>
               </el-form-item>
               <el-form-item prop="confirmPassword">
-                <span slot="label"
-                  ><i class="icon-lock iconfont"></i>确认密码</span
-                >
-                <el-input
-                  v-model="passwordForm.confirmPassword"
-                  type="password"
-                ></el-input>
+                <span slot="label"><i class="icon-lock iconfont"></i>确认密码</span>
+                <el-input v-model="passwordForm.confirmPassword" type="password">
+                </el-input>
               </el-form-item>
               <el-form-item>
-                <el-button
-                  type="success"
-                  @click="submitChangePassword('passwordForm')"
-                  >修改</el-button
-                >
+                <el-button type="success" @click="submitChangePassword('passwordForm')">修改
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -175,13 +119,8 @@
               </el-table-column>
               <el-table-column prop="address" label="操作" min-width="60">
                 <template v-slot="{ row }">
-                  <el-button
-                    type="primary"
-                    size="mini"
-                    @click="returnBook(row)"
-                    :disabled="row.state !== 3"
-                    >归还</el-button
-                  >
+                  <el-button type="primary" size="mini" @click="returnBook(row)"
+                    :disabled="row.state !== 3">归还</el-button>
                 </template>
                 <!-- <el-button type="danger" size="mini" disabled>归还</el-button> -->
               </el-table-column>
@@ -189,24 +128,12 @@
           </div>
           <!-- 投诉记录 -->
           <div class="suggest-records" v-else-if="activeIndex === 4">
-            <el-table
-              :data="suggestTable"
-              style="width: 100%"
-              key="suggestTable"
-            >
+            <el-table :data="suggestTable" style="width: 100%" key="suggestTable">
               <el-table-column prop="title" label="投诉标题" min-width="80">
               </el-table-column>
-              <el-table-column
-                prop="description"
-                label="投诉内容"
-                min-width="80"
-              >
+              <el-table-column prop="description" label="投诉内容" min-width="80">
               </el-table-column>
-              <el-table-column
-                prop="createTime"
-                label="投诉时间"
-                min-width="100"
-              >
+              <el-table-column prop="createTime" label="投诉时间" min-width="100">
                 <template v-slot="{ row }">
                   {{ row.createTime | formatDate }}
                 </template>
@@ -214,19 +141,13 @@
               <el-table-column prop="state" label="投诉进度" min-width="60">
                 <template v-slot="{ row }">
                   <el-tag v-if="row.state === 0">未回复</el-tag>
-                  <el-tag v-else-if="row.state === 1" type="success"
-                    >已回复</el-tag
-                  >
+                  <el-tag v-else-if="row.state === 1" type="success">已回复</el-tag>
                 </template>
               </el-table-column>
               <el-table-column label="操作" min-width="60">
                 <template v-slot="{ row }">
-                  <el-button
-                    type="primary"
-                    size="mini"
-                    @click="showSuggestDetail(row)"
-                    >详情</el-button
-                  >
+                  <el-button type="primary" size="mini" @click="showSuggestDetail(row)">详情
+                  </el-button>
                 </template>
                 <!-- <el-button type="danger" size="mini" disabled>归还</el-button> -->
               </el-table-column>
@@ -236,11 +157,7 @@
       </el-col>
     </el-row>
     <!-- 投诉详情对话框 -->
-    <el-dialog
-      :visible.sync="isSuggesDetailtDialog"
-      width="30%"
-      class="suggest-detail"
-    >
+    <el-dialog :visible.sync="isSuggesDetailtDialog" width="30%" class="suggest-detail">
       <div class="content">
         <p>
           投诉标题:<span>{{ currentSuggest.title }}</span>
@@ -259,12 +176,7 @@
         <p class="breif">
           投诉图片:
           <span>
-            <img
-              :src="bindUrl(currentSuggest.imgUrl)"
-              alt=""
-              width="100"
-              height="100"
-            />
+            <img :src="bindUrl(currentSuggest.imgUrl)" alt="" width="100" height="100" />
           </span>
         </p>
         <p>
@@ -274,19 +186,15 @@
         </p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="isSuggesDetailtDialog = false"
-          size="mini"
-          >关闭</el-button
-        >
+        <el-button type="primary" @click="isSuggesDetailtDialog = false" size="mini">关闭
+        </el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapActions } from 'vuex'
+import { mapMutations, mapActions, mapState } from 'vuex'
 export default {
   data() {
     // 验证邮箱
@@ -333,7 +241,7 @@ export default {
         ],
         imgUrl: [{ required: true, message: '选择头像', trigger: 'blur' }]
       },
-      currentUser: {},
+      // currentUser: {},
       // 2
       passwordForm: {},
       passwordRules: {
@@ -359,7 +267,8 @@ export default {
         size: 10
       },
       total: 10,
-      allBorrow: []
+      allBorrow: [],
+      file: null
     }
   },
   methods: {
@@ -371,7 +280,8 @@ export default {
     },
     // 修改头像
     handleEditAvatarSuccess(res, file) {
-      this.userInfoForm.imgUrl = file.name
+      this.$set(this.userInfoForm, 'imgUrl', file.name)
+      // this.userInfoForm.imgUrl = file.name
     },
     // 处理active
     handleActive() {
@@ -399,28 +309,40 @@ export default {
     // 1----
     async handleUserInfo() {
       // this.initData()
-      this.userInfoForm = this.convertDeepCopy(this.$store.state.user)
+      this.userInfoForm = this.convertDeepCopy(this.currentUser)
       // console.log(this.userInfoForm)
-      const file = await this.getFileById(this.userInfoForm.id)
-      this.$set(this.userInfoForm, 'imgUrl', file.name)
-      this.userInfoForm.fileId = file.id
-    },
-    async submitUserInfo() {
-      const { data, status } = await this.$http.put(
-        '/user/updateIgnoreNull',
-        this.userInfoForm
-      )
-      if (status === 200) {
-        if (data.success) {
-          this.initUser(this.userInfoForm)
-          this.currentUser = this.convertDeepCopy(this.userInfoForm)
-          this.$message.success('修改成功')
-        } else {
-          this.$message.error('修改失败')
-        }
-      } else {
-        this.$message.waring('请求失败')
+      this.file = await this.getFileById(this.userInfoForm.id)
+      // console.log(this.file)
+      if (this.file !== null) {
+        this.$set(this.userInfoForm, 'imgUrl', this.file.name)
+        this.userInfoForm.fileId = this.file.id
       }
+    },
+    submitUserInfo() {
+      this.$refs.userInfoForm.validate(async (valid) => {
+        if (!valid) return
+        const { data, status } = await this.$http.put(
+          '/user/updateIgnoreNull',
+          this.userInfoForm
+        )
+        if (status === 200) {
+          if (data.success) {
+            this.initUser(this.userInfoForm)
+            // this.currentUser = this.convertDeepCopy(this.userInfoForm)
+            if (this.file === null) {
+              await this.$http.post('/list/insert', {
+                userId: this.userInfoForm.id,
+                filename: this.userInfoForm.imgUrl,
+                createTime: Date.now(),
+                updateTime: Date.now()
+              })
+            }
+            this.$message.success('修改成功')
+          } else {
+            this.$message.error('修改失败')
+          }
+        }
+      })
     },
     // 2----
     handleChangePassword() {
@@ -442,8 +364,6 @@ export default {
           } else {
             this.$message.error('修改失败')
           }
-        } else {
-          this.$message.waring('请求失败')
         }
       })
     },
@@ -511,14 +431,18 @@ export default {
       this.handleActive()
     }
   },
+  computed: {
+    ...mapState({ currentUser: 'user' })
+  },
   destroyed() {
     sessionStorage.removeItem('asideIndex')
   },
   async created() {
-    this.handleActive()
-    this.currentUser = this.$store.state.user
     const file = await this.getFileById(this.currentUser.id)
-    this.$set(this.currentUser, 'imgUrl', file.name)
+    if (file) {
+      this.$set(this.currentUser, 'imgUrl', file.name)
+    }
+    this.handleActive()
   }
 }
 </script>
@@ -588,11 +512,12 @@ export default {
   .content {
     .edit-info {
       /deep/.el-upload {
-        border: 2px dashed transparent;
+        border: 2px dashed #999;
         line-height: 0;
         border-radius: 2px;
         width: 120px;
         height: 120px;
+        line-height: 120px;
         img {
           width: 100%;
           height: 100%;
