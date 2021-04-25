@@ -8,11 +8,13 @@
             <!-- <el-menu-item
               ><img src="../assets/logo.png" alt="" class="logo"
             /></el-menu-item> -->
-            <el-menu-item class="logo-title">成都东软学院图书借阅系统 - 后台</el-menu-item>
+            <el-menu-item class="logo-title">图书管理系统 - 后台</el-menu-item>
             <el-submenu class="user-info" index="1">
               <template slot="title">
-                <img :src="bindUrl(currentUser.imgUrl)" class="avatar" />
-                <span>{{ currentUser.username }}</span>
+                <img
+                  src="https://i.picsum.photos/id/689/800/340.jpg?hmac=0450e40iKcQC6uIQ55XqCuzUPRRZGN3NrvDsuG2wax0"
+                  class="avatar" />
+                <span>hah</span>
               </template>
               <!-- <el-menu-item
                 ><i class="icon-user iconfont"></i>个人中心</el-menu-item
@@ -106,7 +108,7 @@ export default {
     }
   },
   created() {
-    this.getAvatarById()
+    // this.getAvatarById()
   }
 }
 </script>

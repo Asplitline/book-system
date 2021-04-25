@@ -1,3 +1,7 @@
+const path = require('path')
+function load (url) {
+    return path.resolve(__dirname, url)
+}
 module.exports = {
     chainWebpack: config => {
         // 生产环境
@@ -23,5 +27,15 @@ module.exports = {
                 return args
             })
         })
+        config.resolve.alias
+            .set('@components', load('./src/components'))
+            .set('@css', load('./src/assets/css'))
+            .set('@components', load('./src/components'))
+            .set('@mixins', load('./src/mixins'))
+            .set('@plugins', load('./src/plugins'))
+            .set('@static', load('./src/static'))
+            .set('@utils', load('./src/utils'))
+            .set('@api', load('./src/api'))
+            .set('@store', load('./src/store'))
     }
 }

@@ -6,13 +6,10 @@ import store from './store'
 // ---
 import axios from 'axios'
 import './plugins/element'
-import './assets/css/global.css'
+import './assets/css/global.less'
 import './assets/fonts/iconfont.css'
-import VueCookies from 'vue-cookies'
 // ---
 import './plugins/function'
-
-Vue.use(VueCookies)
 
 Vue.config.productionTip = false
 
