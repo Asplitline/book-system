@@ -30,7 +30,7 @@ module.exports = {
         config.resolve.alias
             .set('@components', load('./src/components'))
             .set('@css', load('./src/assets/css'))
-            .set('@components', load('./src/components'))
+            .set('@views', load('./src/views'))
             .set('@mixins', load('./src/mixins'))
             .set('@plugins', load('./src/plugins'))
             .set('@static', load('./src/static'))

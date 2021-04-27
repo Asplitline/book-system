@@ -7,26 +7,10 @@ import store from './store'
 import axios from 'axios'
 import './plugins/element'
 import './assets/css/global.less'
-import './assets/fonts/iconfont.css'
-// ---
-import './plugins/function'
+import MyPlugin from '@plugins/MyPlugin'
 
+Vue.use(MyPlugin)
 Vue.config.productionTip = false
-
-axios.defaults.baseURL = 'http://127.0.0.1:8088/'
-// 携带cookie
-axios.defaults.withCredentials = true
-axios.interceptors.request.use(conf => {
-  // console.log(conf)
-  return conf
-}, error => {
-  return Promise.reject(error)
-})
-
-axios.interceptors.response.use(conf => {
-  return conf
-})
-
 Vue.prototype.$http = axios
 
 new Vue({

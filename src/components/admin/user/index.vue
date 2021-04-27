@@ -12,30 +12,14 @@
     <!-- 搜索框 -->
     <el-row class="mixInp" :gutter="20">
       <el-col :span="6">
-        <el-input
-          placeholder="请输入用户账号"
-          v-model="query.keyword"
-          class="input-with-select"
-          clearable
-          @clear="getUsers()"
-          size="small"
-        >
-          <el-button
-            slot="append"
-            icon="el-icon-search"
-            @click="getUsers()"
-          ></el-button>
+        <el-input placeholder="请输入用户账号" v-model="query.keyword" class="input-with-select"
+          clearable @clear="getUsers()" size="small">
+          <el-button slot="append" icon="el-icon-search" @click="getUsers()"></el-button>
         </el-input>
       </el-col>
       <el-col :span="4">
-        <el-button
-          type="success"
-          size="small"
-          @click="showAddUserDialog()"
-          plain
-        >
-          添加用户</el-button
-        >
+        <el-button type="success" size="small" @click="showAddUserDialog()" plain>
+          添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 用户表单 -->
@@ -51,85 +35,39 @@
       <el-table-column prop="level" label="身份" min-width="120">
         <template v-slot="{ row }">
           <el-tag v-if="row.level === 0" effect="dark">普通</el-tag>
-          <el-tag v-else-if="row.level === 1" effect="dark" type="danger"
-            >管理员</el-tag
-          >
+          <el-tag v-else-if="row.level === 1" effect="dark" type="danger">管理员</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" min-width="200">
         <template v-slot="{ row }">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="修改用户"
-            placement="top"
-            :enterable="false"
-          >
-            <el-button
-              type="primary"
-              icon="el-icon-edit"
-              size="small"
-              @click="showEditUserDialog(row)"
-            ></el-button>
+          <el-tooltip class="item" effect="dark" content="修改用户" placement="top"
+            :enterable="false">
+            <el-button type="primary" icon="el-icon-edit" size="small"
+              @click="showEditUserDialog(row)"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="删除用户"
-            placement="top"
-            :enterable="false"
-          >
-            <el-button
-              type="danger"
-              icon="el-icon-delete"
-              size="small"
-              @click="deleteUserById(row.id)"
-            ></el-button>
+          <el-tooltip class="item" effect="dark" content="删除用户" placement="top"
+            :enterable="false">
+            <el-button type="danger" icon="el-icon-delete" size="small"
+              @click="deleteUserById(row.id)"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="重置密码"
-            placement="top"
-            :enterable="false"
-          >
-            <el-button
-              type="warning"
-              icon="el-icon-refresh-left"
-              size="small"
-              @click="resetPassword(row.id)"
-            ></el-button>
+          <el-tooltip class="item" effect="dark" content="重置密码" placement="top"
+            :enterable="false">
+            <el-button type="warning" icon="el-icon-refresh-left" size="small"
+              @click="resetPassword(row.id)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :current-page="query.page"
-      :page-sizes="[1, 2, 5, 10]"
-      :page-size="query.size"
-      layout="total, sizes, prev, pager, next, jumper"
-      :total="total"
-    >
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+      :current-page="query.page" :page-sizes="[1, 2, 5, 10]" :page-size="query.size"
+      layout="total, sizes, prev, pager, next, jumper" :total="total">
     </el-pagination>
     <!-- 添加用户 -->
-    <el-dialog
-      :visible.sync="isAddUserDialog"
-      width="25%"
-      :close-on-click-modal="false"
-      @close="clearDialog('addUserForm')"
-    >
-      <el-form
-        :model="addUserForm"
-        :rules="userInfoRules"
-        ref="addUserForm"
-        label-width="100px"
-        size="mini"
-        class="user-form"
-        hide-required-asterisk
-      >
+    <el-dialog :visible.sync="isAddUserDialog" width="25%" :close-on-click-modal="false"
+      @close="clearDialog('addUserForm')">
+      <el-form :model="addUserForm" :rules="userInfoRules" ref="addUserForm"
+        label-width="100px" size="mini" class="user-form" hide-required-asterisk>
         <el-form-item prop="username">
           <span slot="label"><i class="icon-user iconfont"></i>账号</span>
           <el-input v-model="addUserForm.username"></el-input>
@@ -157,60 +95,30 @@
         </el-form-item>
         <el-form-item prop="imgUrl">
           <span slot="label"><i class="icon-camera1 iconfont"></i>头像</span>
-          <el-upload
-            class="avatar-uploader"
-            :action="bindImg('util/uploadfile')"
-            :show-file-list="false"
-            :on-success="handleAddAvatarSuccess"
-            name="files"
-          >
-            <img
-              v-if="addUserForm.imgUrl"
-              :src="bindUrl(addUserForm.imgUrl)"
-              class="avatar"
-              ref="preview"
-            />
+          <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+            :show-file-list="false" :on-success="handleAddAvatarSuccess" name="files">
+            <img v-if="addUserForm.imgUrl" :src="bindUrl(addUserForm.imgUrl)"
+              class="avatar" ref="preview" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item prop="description">
           <span slot="label"><i class="icon-bulb iconfont"></i>自我描述</span>
-          <el-input
-            v-model="addUserForm.description"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 6 }"
-            resize="none"
-          ></el-input>
+          <el-input v-model="addUserForm.description" type="textarea"
+            :autosize="{ minRows: 3, maxRows: 6 }" resize="none"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isAddUserDialog = false" size="small"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="submitUserForm('addUserForm')"
-          size="small"
-          >添 加</el-button
-        >
+        <el-button @click="isAddUserDialog = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="submitUserForm('addUserForm')" size="small">添 加
+        </el-button>
       </span>
     </el-dialog>
     <!-- 修改用户 -->
-    <el-dialog
-      :visible.sync="isEditUserDialog"
-      width="25%"
-      :close-on-click-modal="false"
-      @close="clearDialog('editUserForm')"
-    >
-      <el-form
-        :model="editUserForm"
-        :rules="userInfoRules"
-        ref="editUserForm"
-        label-width="100px"
-        size="mini"
-        class="user-form"
-        hide-required-asterisk
-      >
+    <el-dialog :visible.sync="isEditUserDialog" width="25%" :close-on-click-modal="false"
+      @close="clearDialog('editUserForm')">
+      <el-form :model="editUserForm" :rules="userInfoRules" ref="editUserForm"
+        label-width="100px" size="mini" class="user-form" hide-required-asterisk>
         <el-form-item prop="username">
           <span slot="label"><i class="icon-user iconfont"></i>账号</span>
           <el-input v-model="editUserForm.username" disabled></el-input>
@@ -234,43 +142,24 @@
         </el-form-item>
         <el-form-item prop="imgUrl">
           <span slot="label"><i class="icon-camera1 iconfont"></i>头像</span>
-          <el-upload
-            class="avatar-uploader"
-            :action="bindImg('util/uploadfile')"
-            :show-file-list="false"
-            :on-success="handleEditAvatarSuccess"
-            name="files"
-            :data="{ id: editUserForm.fileId }"
-          >
-            <img
-              v-if="editUserForm.imgUrl"
-              :src="bindUrl(editUserForm.imgUrl)"
-              class="avatar"
-              ref="preview"
-            />
+          <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+            :show-file-list="false" :on-success="handleEditAvatarSuccess" name="files"
+            :data="{ id: editUserForm.fileId }">
+            <img v-if="editUserForm.imgUrl" :src="bindUrl(editUserForm.imgUrl)"
+              class="avatar" ref="preview" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
         <el-form-item prop="description">
           <span slot="label"><i class="icon-bulb iconfont"></i>自我描述</span>
-          <el-input
-            v-model="editUserForm.description"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 6 }"
-            resize="none"
-          ></el-input>
+          <el-input v-model="editUserForm.description" type="textarea"
+            :autosize="{ minRows: 3, maxRows: 6 }" resize="none"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isEditUserDialog = false" size="small"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="submitUserForm('editUserForm')"
-          size="small"
-          >修 改</el-button
-        >
+        <el-button @click="isEditUserDialog = false" size="small">取 消</el-button>
+        <el-button type="primary" @click="submitUserForm('editUserForm')" size="small">修 改
+        </el-button>
       </span>
     </el-dialog>
   </div>

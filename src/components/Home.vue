@@ -9,17 +9,20 @@
           <!-- <a href="javascript:;" class="logo">
             <img src="../assets/logo.png" alt="" height="50" />
           </a> -->
-          <el-menu-item index="/index"><i class="icon-home iconfont"></i>首页</el-menu-item>
+          <!-- <el-menu-item index="/index"><i class="icon-home iconfont"></i>首页</el-menu-item>
           <el-menu-item index="/borrow"><i class="icon-unorderedlist iconfont"></i>借阅中心
           </el-menu-item>
           <el-menu-item index="/suggest"><i class="icon-calendar-check iconfont"></i>投诉建议
           </el-menu-item>
           <el-menu-item index="/repair"><i class="icon-setting iconfont"></i>损坏保修
-          </el-menu-item>
+          </el-menu-item> -->
           <!-- <el-menu-item index="/post"
             ><i class="icon-solution iconfont"></i>帖子中心</el-menu-item
           > -->
-          <el-menu-item index="/info"><i class="icon-user iconfont"></i>个人中心
+          <!-- <el-menu-item index="/info"><i class="icon-user iconfont"></i>个人中心 -->
+          <!-- </el-menu-item> -->
+          <el-menu-item :index="item.index" v-for="item in hMenu" :key="item.index">
+            <i></i>{{item.name}}
           </el-menu-item>
           <div class="login">
             <a href="javascript:;" v-if="isLogin" @click="showLoginDialog">登录</a>

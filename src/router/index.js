@@ -1,59 +1,53 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-// -----------1
-import Home from '@/components/Home'
-import Admin from '@/components/Admin'
-import Login from '@/components/Login'
-// -----------2
+import { aMiniMenu, hMiniMenu } from '@static'
+import store from '@store'
+// base
+const Admin = () => import(/* webpackChunkName:'admin' */'@views/Admin')
+const Home = () => import(/* webpackChunkName:'home' */'@views/Home')
+const Login = () => import(/* webpackChunkName:'login' */'@views/Login')
 // home
-import Index from '@/components/home/index/Index'
-import Borrow from '@/components/home/borrow/Borrow'
-import Suggest from '@/components/home/suggest/Suggest'
-import Repair from '@/components/home/repair/Repair'
-import Post from '@/components/home/post/Post'
-import Info from '@/components/home/info/Info'
-import PostDetail from '@/components/home/post/PostDetail'
+const Index = () => import(/* webpackChunkName:'h-index' */'@views/home/Index')
+const BookCenter = () => import(/* webpackChunkName:'h-book-center' */'@views/home/BookCenter')
+const Errata = () => import(/* webpackChunkName:'h-errata' */'@views/home/Errata')
+const MessageBoard = () => import(/* webpackChunkName:'h-message-board' */'@views/home/MessageBoard')
+const Info = () => import(/* webpackChunkName:'h-info' */'@views/home/Info')
 // admin
-import aBorrow from '@/components/admin/borrow/Borrow'
-import aGoods from '@/components/admin/goods/Goods'
-import aLog from '@/components/admin/log/Log'
-import aPost from '@/components/admin/post/Post'
-import aRepair from '@/components/admin/repair/Repair'
-import aSuggest from '@/components/admin/suggest/Suggest'
-import aUser from '@/components/admin/user/User'
+const User = () => import(/* webpackChunkName:'a-user' */'@views/admin/User')
+const Book = () => import(/* webpackChunkName:'a-book' */'@views/admin/Book')
+const Message = () => import(/* webpackChunkName:'a-message' */'@views/admin/Message')
+const Correction = () => import(/* webpackChunkName:'a-correction' */'@views/admin/Correction')
+const Borrow = () => import(/* webpackChunkName:'a-borrow' */'@views/admin/Borrow')
+const Log = () => import(/* webpackChunkName:'a-log' */'@views/admin/Log')
 Vue.use(VueRouter)
 
 const routes = [
   { path: '/login', name: 'login', component: Login },
   {
     path: '/',
-    name: 'Home',
+    name: 'home',
     component: Home,
-    redirect: '/index',
+    redirect: { name: 'index' },
     children: [
       { path: '/index', name: 'index', component: Index },
-      { path: '/borrow', name: 'borrow', component: Borrow },
-      { path: '/suggest', name: 'suggest', component: Suggest },
-      { path: '/repair', name: 'repair', component: Repair },
-      { path: '/post', name: 'post', component: Post },
-      { path: '/info', name: 'info', component: Info },
-      // -----
-      { path: '/post/:id', name: 'postDetail', component: PostDetail }
+      { path: '/bookCenter', name: 'borrow', component: BookCenter },
+      { path: '/errata', name: 'suggest', component: Errata },
+      { path: '/messageBoard', name: 'repair', component: MessageBoard },
+      { path: '/info', name: 'post', component: Info }
     ]
   },
   {
     path: '/admin',
-    name: 'Admin',
+    name: 'admin',
     component: Admin,
-    redirect: '/_user',
+    redirect: { name: 'user' },
     children: [
-      { path: '/_borrow', name: 'aBorrow', component: aBorrow },
-      { path: '/_goods', name: 'aGoods', component: aGoods },
-      { path: '/_log', name: 'aLog', component: aLog },
-      { path: '/_post', name: 'aPost', component: aPost },
-      { path: '/_repair', name: 'aRepair', component: aRepair },
-      { path: '/_suggest', name: 'aSuggest', component: aSuggest },
-      { path: '/_user', name: 'aUser', component: aUser }
+      { path: '/user', name: 'user', component: User },
+      { path: '/book', name: 'book', component: Book },
+      { path: '/message', name: 'message', component: Message },
+      { path: '/correction', name: 'correction', component: Correction },
+      { path: '/borrow', name: 'borrow', component: Borrow },
+      { path: '/log', name: 'log', component: Log }
     ]
   }
 ]
@@ -63,29 +57,13 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  switch (to.path) {
-    case '/_borrow':
-    case '/_goods':
-    case '/_log':
-    case '/_post':
-    case '/_repair':
-    case '/_suggest':
-    case '/_user':
-      sessionStorage.setItem('currentIndexA', to.path)
-      break
-    case '/index':
-    case '/borrow':
-    case '/suggest':
-    case '/repair':
-    case '/post':
-    case '/info':
-      sessionStorage.setItem('currentIndexF', to.path)
-      break
-    case '/':
-      sessionStorage.setItem('currentIndexF', '/index')
-      break
+  const path = to.path.split('/')[1]
+  if (aMiniMenu.includes(path)) {
+    store.commit('setAMenu', path)
   }
-
+  if (hMiniMenu.includes(path)) {
+    store.commit('setHMenu', path)
+  }
   next()
 })
 export default router

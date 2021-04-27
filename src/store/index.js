@@ -1,25 +1,22 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Axios from 'axios'
+import { getSession, setSession } from '@utils'
 
 Vue.use(Vuex)
-
 export default new Vuex.Store({
   state: {
-    user: JSON.parse(sessionStorage.getItem('userInfo')),
-    currentImg: '',
-    isLogin: false
+    currentAMenu: getSession('aMenu'),
+    currentHMenu: getSession('hMenu')
   },
   mutations: {
-    initUser (state, data) {
-      sessionStorage.setItem('userInfo', JSON.stringify(data))
-      state.user = data
+    setAMenu (state, data) {
+      state.currentAMenu = data
+      setSession('aMenu', data)
     },
-    initImg (state, { data }) {
-      state.currentImg = data.length > 0 ? data[0].filename : ''
-    },
-    initLoginStatus (state, flag) {
-      state.isLogin = flag
+    setHMenu (state, data) {
+      state.currentHMenu = data
+      setSession('hMenu', data)
     }
   },
   actions: {
@@ -34,16 +31,6 @@ export default new Vuex.Store({
       } else {
         return { name: 'default_pic.png' }
       }
-    },
-    async getBookById ({ commit }, id) {
-      const { data } = await Axios.get('/book/getById', {
-        params: {
-          id
-        }
-      })
-      return data
     }
-  },
-  modules: {
   }
 })
