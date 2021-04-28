@@ -14,6 +14,7 @@ const MessageBoard = () => import(/* webpackChunkName:'h-message-board' */'@view
 const Info = () => import(/* webpackChunkName:'h-info' */'@views/home/Info')
 // admin
 const User = () => import(/* webpackChunkName:'a-user' */'@views/admin/User')
+const Category = () => import(/* webpackChunkName:'a-category' */'@views/admin/Category')
 const Book = () => import(/* webpackChunkName:'a-book' */'@views/admin/Book')
 const Message = () => import(/* webpackChunkName:'a-message' */'@views/admin/Message')
 const Correction = () => import(/* webpackChunkName:'a-correction' */'@views/admin/Correction')
@@ -43,6 +44,7 @@ const routes = [
     redirect: { name: 'user' },
     children: [
       { path: '/user', name: 'user', component: User },
+      { path: '/category', name: 'category', component: Category },
       { path: '/book', name: 'book', component: Book },
       { path: '/message', name: 'message', component: Message },
       { path: '/correction', name: 'correction', component: Correction },

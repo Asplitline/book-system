@@ -7,7 +7,14 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     currentAMenu: getSession('aMenu'),
-    currentHMenu: getSession('hMenu')
+    currentHMenu: getSession('hMenu'),
+    allCategory: getSession('allCategory')
+  },
+  getters: {
+    getCategoryById: (state) => (id) => {
+      return state.allCategory &&
+        state.allCategory.find(item => item.id === id)
+    }
   },
   mutations: {
     setAMenu (state, data) {
@@ -17,6 +24,10 @@ export default new Vuex.Store({
     setHMenu (state, data) {
       state.currentHMenu = data
       setSession('hMenu', data)
+    },
+    setAllCategory (state, data) {
+      state.allCategory = data
+      setSession('allCategory', data)
     }
   },
   actions: {
@@ -31,6 +42,10 @@ export default new Vuex.Store({
       } else {
         return { name: 'default_pic.png' }
       }
+    },
+    async getAllCategory ({ commit }, _this) {
+      const data = await _this.$api.getCategory()
+      commit('setAllCategory', data)
     }
   }
 })

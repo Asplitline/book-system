@@ -4,25 +4,15 @@
       <!-- 搜索框 -->
       <el-row class="topSearch">
         <el-col :span="8">
-          <el-input
-            placeholder="请输入书籍名称"
-            v-model="query.keyword"
-            @clear="getBooks"
-            clearable
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getBooks()"
-            ></el-button>
+          <el-input placeholder="请输入书籍名称" v-model="query.keyword" @clear="getBooks"
+            clearable>
+            <el-button slot="append" icon="el-icon-search" @click="getBooks()">
+            </el-button>
           </el-input>
         </el-col>
         <el-col :span="8" :offset="8">
-          <el-pagination
-            layout="prev, pager, next"
-            :total="total"
-            @current-change="handleCurrentChange"
-          >
+          <el-pagination layout="prev, pager, next" :total="total"
+            @current-change="handleCurrentChange">
           </el-pagination>
         </el-col>
       </el-row>
@@ -37,32 +27,20 @@
           </el-table-column>
           <el-table-column prop="number" label="书籍数量" min-width="80">
           </el-table-column>
-          <el-table-column
-            prop="description"
-            label="书籍描述"
-            min-width="240"
-            class="desc"
-          >
+          <el-table-column prop="description" label="书籍描述" min-width="240" class="desc">
             <template v-slot="{ row }">
               {{ row.description === 'string' ? '暂无描述' : row.description }}
             </template>
           </el-table-column>
           <el-table-column label="操作" min-width="200">
             <template v-slot="{ row }">
-              <el-button type="primary" size="mini" @click="showBookDetail(row)"
-                >详情</el-button
-              >
-              <el-button
-                type="success"
-                size="mini"
-                @click="requestBorrow(row)"
-                :disabled="getStateById(row.id) >= 0"
-                >借取</el-button
-              >
+              <el-button type="primary" size="mini" @click="showBookDetail(row)">详情
+              </el-button>
+              <el-button type="success" size="mini" @click="requestBorrow(row)"
+                :disabled="getStateById(row.id) >= 0">借取</el-button>
 
-              <el-button type="warning" size="mini" @click="showBookRepair(row)"
-                >报修</el-button
-              >
+              <el-button type="warning" size="mini" @click="showBookRepair(row)">报修
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -108,54 +86,27 @@
       </div>
     </el-dialog>
     <!-- 书籍报修 -->
-    <el-dialog
-      title="新增报修"
-      :visible.sync="isBookRepairDialog"
-      width="30%"
-      @close="handleDialogClose('bookRepairForm')"
-      class="book-repair-dialog"
-      :close-on-click-modal="false"
-    >
-      <el-form
-        :model="bookRepairForm"
-        :rules="bookRepairRules"
-        ref="bookRepairForm"
-      >
+    <el-dialog title="新增报修" :visible.sync="isBookRepairDialog" width="30%"
+      @close="handleDialogClose('bookRepairForm')" class="book-repair-dialog"
+      :close-on-click-modal="false">
+      <el-form :model="bookRepairForm" :rules="bookRepairRules" ref="bookRepairForm">
         <el-form-item label="报修原因" prop="description">
-          <el-input
-            v-model="bookRepairForm.description"
-            type="textarea"
-            :autosize="{ minRows: 2, maxRows: 6 }"
-            resize="none"
-          ></el-input>
+          <el-input v-model="bookRepairForm.description" type="textarea"
+            :autosize="{ minRows: 2, maxRows: 6 }" resize="none"></el-input>
         </el-form-item>
         <el-form-item label="图片说明" prop="imageUrl">
-          <el-upload
-            class="avatar-uploader"
-            :action="bindImg('util/uploadfile')"
-            :show-file-list="false"
-            :on-success="handleAddAvatarSuccess"
-            name="files"
-          >
-            <img
-              v-if="bookRepairForm.imageUrl"
-              :src="bookRepairForm.imageUrl"
-              class="avatar"
-            />
+          <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+            :show-file-list="false" :on-success="handleAddAvatarSuccess" name="files">
+            <img v-if="bookRepairForm.imageUrl" :src="bookRepairForm.imageUrl"
+              class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isBookRepairDialog = false" size="mini"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="submitRepairInfo('bookRepairForm')"
-          size="mini"
-          >确 定</el-button
-        >
+        <el-button @click="isBookRepairDialog = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="submitRepairInfo('bookRepairForm')" size="mini">
+          确 定</el-button>
       </span>
     </el-dialog>
     <!-- 报修图片对话框 -->

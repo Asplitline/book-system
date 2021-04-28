@@ -14,7 +14,7 @@
         <el-table :data="tableData" border style="width: 100%">
           <el-table-column prop="username" label="账号" min-width="100">
           </el-table-column>
-          <el-table-column prop="name" label="姓名" min-width="100">
+          <el-table-column prop="name" label="用户名" min-width="100">
           </el-table-column>
           <el-table-column prop="level" label="身份" min-width="100">
             <template v-slot="{row}">
@@ -57,15 +57,16 @@
           </el-table-column>
         </el-table>
       </el-main>
-      <el-pagination @size-change="handleSizeChange($event,fetch)"
-        @current-change="handleCurrentChange($event,fetch)" :page-sizes="[1, 2, 5, 10]"
-        layout="total,sizes, prev, pager, next" :total="total">
+      <el-pagination @size-change="handleSizeChange($event,fetchData)"
+        @current-change="handleCurrentChange($event,fetchData)"
+        :page-sizes="[1, 2, 5, 10]" layout="total,sizes, prev, pager, next"
+        :total="total">
       </el-pagination>
     </el-container>
     <!-- dialog -->
     <el-dialog :title="['添加用户','修改用户'][this.form.flag]" :visible.sync="dialogFormVisible"
       width="30%" @close="clearDialog('form')">
-      <el-form :model="form" size="small" label-width="60px" ref="form" :rules="rules">
+      <el-form :model="form" size="small" label-width="80px" ref="form" :rules="rules">
         <el-form-item label="头像" prop="imgUrl">
           <el-upload class="avatar-uploader" :action="bindIMG('util/uploadfile')"
             :show-file-list="false" :on-success="handleAvatarSuccess" name="files"
@@ -79,7 +80,7 @@
           <el-input v-model="form.username" autocomplete="off"
             :disabled="form.flag === 1"></el-input>
         </el-form-item>
-        <el-form-item label="姓名" prop="name">
+        <el-form-item label="用户名" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
@@ -107,22 +108,25 @@
 <script>
 import mixins from '@mixins'
 import { levelState, ADD, EDIT, DEFAULT_PWD } from '@static'
-import { deepClone, bindIMG } from '@utils'
+import { deepClone, bindIMG, checkEmail, checkPhone } from '@utils'
 export default {
   data() {
     return {
-      tableData: [],
-      form: {},
       rules: {
         imgUrl: [{ required: true, message: '请选择头像', trigger: 'blur' }],
         username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
         name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-        email: [{ required: true, message: '电子邮箱', trigger: 'blur' }],
-        phone: [{ required: true, message: '请输入手机号码', trigger: 'blur' }],
+        email: [
+          { required: true, message: '请输入电子邮箱', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: '请输入手机号码', trigger: 'blur' },
+          { validator: checkPhone, trigger: 'blur' }
+        ],
         level: [{ required: true, message: '请选择身份', trigger: 'blur' }]
       },
       levelState,
-      dialogFormVisible: false,
       visible: false,
       uploadInfo: {}
     }
@@ -140,10 +144,15 @@ export default {
       if (flag === ADD) {
         this.form.flag = flag
       } else if (flag === EDIT) {
-        this.$nextTick(() => {
+        // this.$api
+        this.$nextTick(async () => {
           this.form = deepClone(data)
           this.form.flag = flag
-          this.uploadInfo = { id: this.form.id }
+          const file = await this.$api.getFile({ id: this.form.id })
+          if (file.length) {
+            this.$set(this.form, 'imgUrl', file[0].filename)
+            this.uploadInfo = { id: file[0].id }
+          }
         })
       }
     },
@@ -173,29 +182,21 @@ export default {
       if (this.form.flag === ADD) {
         this.form.id = res
       }
-      // console.log(file)
-      // const data = {
-      //   updateTime: Date.now(),
-      //   filename: file.name,
-      //   size: file.size
-      // }
-      // if (this.form.flag === ADD) {
-      //   data.createTime = Date.now()
-      //   data.userId = res
-      //   const res = await this.$api.addFile(data)
-      //   console.log(res)
-      // } else if (this.form.flag === EDIT) {
-      //   data.userId = this.form.id
-      //   const res = await this.$api.editFile(data)
-      //   console.log(res)
-      // }
     },
-    submitDialog(formName, flag) {
-      // console.log(this.$refs, flag)
-      this.$refs[formName].validate((valid) => {
+    submitDialog(formName) {
+      this.$refs[formName].validate(async (valid) => {
         if (!valid) return
-        console.log(this.form.flag)
-        console.log(this[formName])
+        this[formName].updateTime = Date.now()
+        if (this[formName].flag === ADD) {
+          this[formName].createTime = Date.now()
+          this[formName].password = DEFAULT_PWD
+          const { success } = await this.$api.addUser(this[formName])
+          this.handleSuccess(success, '添加用户', this.fetchData)
+        } else if (this[formName].flag === EDIT) {
+          const { success } = await this.$api.editUser(this[formName])
+          this.handleSuccess(success, '修改用户', this.fetchData)
+        }
+        this.dialogFormVisible = false
       })
     }
   },
@@ -206,50 +207,5 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.el-link {
-  margin-right: 10px;
-  &:last-child {
-    margin-right: 0;
-  }
-}
-.el-pagination {
-  margin-top: 10px;
-  margin-left: 20px;
-}
-.el-header {
-  position: relative;
-  .add-btn {
-    position: absolute;
-    top: 0;
-    right: 20px;
-  }
-}
-.avatar {
-  width: 80px;
-  height: 80px;
-}
-
-/deep/.el-upload {
-  position: relative;
-  line-height: 0;
-  border-radius: 2px;
-  border: 2px dashed rgba(0 0 0 / 0.2);
-  width: 120px;
-  height: 120px;
-  img {
-    width: 100%;
-    height: 100%;
-    box-shadow: 0px 1px 2px 1px rgba(0 0 0 / 0.2);
-  }
-  &:hover {
-    border: 2px dashed #ff525278;
-  }
-  i {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20px;
-  }
-}
+@import '~@css/aCommon.less';
 </style>

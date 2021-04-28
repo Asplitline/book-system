@@ -3,7 +3,10 @@ export default {
     mixins: [common],
     data () {
         return {
-            name: 'admin'
+            name: 'admin',
+            tableData: [],
+            form: {},
+            dialogFormVisible: false
         }
     },
     methods: {
@@ -25,6 +28,14 @@ export default {
                 .catch(() => {
                     this.$message.warning('已取消删除')
                 })
+        },
+        handleSuccess (success, info, callback) {
+            if (success) {
+                this.$message.success(`${info}成功`)
+                callback && callback()
+            } else {
+                this.$message.error(`${info}失败`)
+            }
         }
     }
 }
