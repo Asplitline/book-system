@@ -26,7 +26,6 @@
             <template slot="header" slot-scope="scope">
               <el-input v-model="query.keyword" size="mini" placeholder="输入关键字搜索"
                 :clearable="true" @clear="clearIpt(fetchData,scope)">
-                <!-- tag 解决报错 -->
                 <el-button slot="append" icon="el-icon-search" @click="fetchData">
                 </el-button>
               </el-input>

@@ -16,14 +16,19 @@ const _get = (url) => {
     }
 }
 
-const _post = (url) => {
+const _post = (url, model = 1) => {
     return (params) => {
-        return http.post(url, params)
-            .then(res => {
-                return res.data
-            }).catch(err => {
-                console.log(err)
-            })
+        let res
+        if (model === 1) {
+            res = http.post(url, params)
+        } else if (model === 2) {
+            res = http.post(url + '?' + params)
+        }
+        return res.then(res => {
+            return res.data
+        }).catch(err => {
+            console.log(err)
+        })
     }
 }
 

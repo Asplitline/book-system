@@ -3,8 +3,7 @@ export function setSession (name, value) {
     sessionStorage.setItem(name, JSON.stringify(value))
 }
 export function getSession (name) {
-    // console.log(sessionStorage.getItem(name))
-    return sessionStorage.getItem(name) == null && JSON.parse(sessionStorage.getItem(name))
+    return sessionStorage.getItem(name) != null && JSON.parse(sessionStorage.getItem(name))
 }
 export function pad0 (data, len = 2) {
     return ('00000000000' + data).substr(-len)
@@ -25,6 +24,15 @@ export function deepClone (data = {}) {
         }
     }
     return res
+}
+export function convertURL (obj = {}) {
+    const arr = []
+    for (const key in obj) {
+        if (obj[key] && key) {
+            arr.push(`${key}=${obj[key]}`)
+        }
+    }
+    return arr.join('&')
 }
 export function bindIMG (url) {
     return IMG_URL + url

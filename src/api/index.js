@@ -1,9 +1,11 @@
 import api from './helper'
 const { _get, _post, _delete, _put } = api
-
+const TRADITION_MODEL = 2
 // base
 const base = {
-    changePassword: _get('/user/changePassword')
+    changePassword: _get('/user/changePassword'),
+    login: _post('account/api/login', TRADITION_MODEL),
+    register: _post('account/api/regist')
 }
 // user
 const user = {

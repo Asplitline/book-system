@@ -8,6 +8,7 @@ export default new Vuex.Store({
   state: {
     currentAMenu: getSession('aMenu'),
     currentHMenu: getSession('hMenu'),
+    currentUser: getSession('currentUser'),
     allCategory: getSession('allCategory')
   },
   getters: {
@@ -24,6 +25,10 @@ export default new Vuex.Store({
     setHMenu (state, data) {
       state.currentHMenu = data
       setSession('hMenu', data)
+    },
+    setCurrentUser (state, data) {
+      state.currentUser = data
+      setSession('currentUser', data)
     },
     setAllCategory (state, data) {
       state.allCategory = data

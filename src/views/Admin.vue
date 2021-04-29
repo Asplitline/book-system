@@ -11,17 +11,16 @@
       <el-container>
         <el-header>
           <span class="title">图书管理系统</span>
-          <el-dropdown>
+          <el-dropdown @command="handleCommand">
             <el-avatar
               src="https://i.picsum.photos/id/1048/800/340.jpg?hmac=zrTcMMACYRInfQA_-RqZGJDuMW47uk-g3bo5CkfPIVE">
             </el-avatar>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>跳转前台</el-dropdown-item>
-              <el-dropdown-item>退出系统</el-dropdown-item>
+              <el-dropdown-item command="goIndex">跳转前台</el-dropdown-item>
+              <el-dropdown-item command="logOut">退出系统</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-header>
-
         <el-main>
           <router-view />
         </el-main>
@@ -42,6 +41,19 @@ export default {
   },
   computed: {
     ...mapState({ active: 'currentAMenu' })
+  },
+  methods: {
+    handleCommand(val) {
+      this[val] && this[val]()
+    },
+    logOut() {
+      sessionStorage.clear()
+      this.$store.commit('setCurrentUser', null)
+      this.$router.push({ name: 'login' })
+    },
+    goIndex() {
+      this.$router.push({ name: 'home' })
+    }
   },
   mixins: [mixins.admin],
   created() {}

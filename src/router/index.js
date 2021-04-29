@@ -60,12 +60,33 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const path = to.path.split('/')[1]
+  const user = store.state.currentUser
   if (aMiniMenu.includes(path)) {
     store.commit('setAMenu', path)
-  }
-  if (hMiniMenu.includes(path)) {
+  } else if (hMiniMenu.includes(path)) {
     store.commit('setHMenu', path)
   }
+  if (user === false) {
+    if (path === 'login') {
+      next()
+    } else {
+      next({ name: 'login' })
+    }
+  } else {
+    if (path === 'login') {
+      next(from.path)
+      // ques next(false) invalid
+      // next(false)
+    } else {
+      if (user.level !== 1 && aMiniMenu.includes(path)) {
+        next(from.path)
+        // next(false)
+      } else {
+        next()
+      }
+    }
+  }
+
   next()
 })
 export default router
