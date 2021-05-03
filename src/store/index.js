@@ -9,12 +9,16 @@ export default new Vuex.Store({
     currentAMenu: getSession('aMenu'),
     currentHMenu: getSession('hMenu'),
     currentUser: getSession('currentUser'),
-    allCategory: getSession('allCategory')
+    allCategory: getSession('allCategory'),
+    allFile: getSession('allFile')
   },
   getters: {
     getCategoryById: (state) => (id) => {
       return state.allCategory &&
         state.allCategory.find(item => item.id === id)
+    },
+    getFileById: (state) => (id) => {
+      return state.allFile.find(item => item.id === id)
     }
   },
   mutations: {
@@ -33,6 +37,10 @@ export default new Vuex.Store({
     setAllCategory (state, data) {
       state.allCategory = data
       setSession('allCategory', data)
+    },
+    setAllFile (state, data) {
+      state.allFile = data
+      setSession('allFile', data)
     }
   },
   actions: {
@@ -51,6 +59,10 @@ export default new Vuex.Store({
     async getAllCategory ({ commit }, _this) {
       const data = await _this.$api.getCategory()
       commit('setAllCategory', data)
+    },
+    async getAllFile ({ commit }, _this) {
+      const data = await _this.$api.getFileList()
+      commit('setAllFile', data)
     }
   }
 })

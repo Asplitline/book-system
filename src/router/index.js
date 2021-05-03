@@ -20,6 +20,11 @@ const Message = () => import(/* webpackChunkName:'a-message' */'@views/admin/Mes
 const Correction = () => import(/* webpackChunkName:'a-correction' */'@views/admin/Correction')
 const Borrow = () => import(/* webpackChunkName:'a-borrow' */'@views/admin/Borrow')
 const Log = () => import(/* webpackChunkName:'a-log' */'@views/admin/Log')
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push (location) {
+  return originalPush.call(this, location).catch(err => err)
+}
+
 Vue.use(VueRouter)
 
 const routes = [

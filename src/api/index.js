@@ -16,6 +16,7 @@ const user = {
 }
 // file
 const file = {
+    getFileList: _get('/list/list'),
     getFile: _get('/util/getFilesByUserId'),
     addFile: _post('/list/insert'),
     editFile: _put('/list/updateIgnoreNull')
