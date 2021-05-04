@@ -12,6 +12,8 @@ const BookCenter = () => import(/* webpackChunkName:'h-book-center' */'@views/ho
 const Errata = () => import(/* webpackChunkName:'h-errata' */'@views/home/Errata')
 const MessageBoard = () => import(/* webpackChunkName:'h-message-board' */'@views/home/MessageBoard')
 const Info = () => import(/* webpackChunkName:'h-info' */'@views/home/Info')
+// home -
+const BookDetail = () => import(/* webpackChunkName:'h-book-detail' */'@views/home/BookCenter/BookDetail')
 // admin
 const User = () => import(/* webpackChunkName:'a-user' */'@views/admin/User')
 const Category = () => import(/* webpackChunkName:'a-category' */'@views/admin/Category')
@@ -20,6 +22,7 @@ const Message = () => import(/* webpackChunkName:'a-message' */'@views/admin/Mes
 const Correction = () => import(/* webpackChunkName:'a-correction' */'@views/admin/Correction')
 const Borrow = () => import(/* webpackChunkName:'a-borrow' */'@views/admin/Borrow')
 const Log = () => import(/* webpackChunkName:'a-log' */'@views/admin/Log')
+
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
@@ -36,10 +39,11 @@ const routes = [
     redirect: { name: 'index' },
     children: [
       { path: '/index', name: 'index', component: Index },
-      { path: '/bookCenter', name: 'borrow', component: BookCenter },
-      { path: '/errata', name: 'suggest', component: Errata },
-      { path: '/messageBoard', name: 'repair', component: MessageBoard },
-      { path: '/info', name: 'post', component: Info }
+      { path: '/bookCenter', name: 'bookCenter', component: BookCenter },
+      { path: '/bookCenter/:id', name: 'bookDetail', component: BookDetail },
+      { path: '/errata', name: 'errata', component: Errata },
+      { path: '/messageBoard', name: 'messageBoard', component: MessageBoard },
+      { path: '/info', name: 'info', component: Info }
     ]
   },
   {
@@ -71,7 +75,7 @@ router.beforeEach((to, from, next) => {
   } else if (hMiniMenu.includes(path)) {
     store.commit('setHMenu', path)
   }
-  if (user === false) {
+  if (user === false || user === null) {
     if (path === 'login') {
       next()
     } else {
@@ -91,7 +95,6 @@ router.beforeEach((to, from, next) => {
       }
     }
   }
-
   next()
 })
 export default router

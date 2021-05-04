@@ -14,24 +14,20 @@
         <el-card class="menu-nav">
           <ul>
             <li @click="setActive(1)">
-              <a href="javascript:;" :class="{ active: activeIndex === 1 }"
-                ><i class="iconfont icon-user">个人信息</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 1 }"><i
+                  class="iconfont icon-user">个人信息</i></a>
             </li>
             <li @click="setActive(2)">
-              <a href="javascript:;" :class="{ active: activeIndex === 2 }"
-                ><i class="iconfont icon-edit-square">更改密码</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 2 }"><i
+                  class="iconfont icon-edit-square">更改密码</i></a>
             </li>
             <li @click="setActive(3)">
-              <a href="javascript:;" :class="{ active: activeIndex === 3 }"
-                ><i class="iconfont icon-unorderedlist">借阅记录</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 3 }"><i
+                  class="iconfont icon-unorderedlist">借阅记录</i></a>
             </li>
             <li @click="setActive(4)">
-              <a href="javascript:;" :class="{ active: activeIndex === 4 }"
-                ><i class="iconfont icon-solution">投诉记录</i></a
-              >
+              <a href="javascript:;" :class="{ active: activeIndex === 4 }"><i
+                  class="iconfont icon-solution">投诉记录</i></a>
             </li>
           </ul>
         </el-card>
@@ -40,18 +36,10 @@
         <el-card class="content">
           <!-- 用户信息 -->
           <div class="edit-info" v-if="activeIndex === 1">
-            <el-form
-              :model="userInfoForm"
-              :rules="userInfoRules"
-              ref="userInfoForm"
-              label-width="100px"
-              size="small"
-              :hide-required-asterisk="true"
-            >
+            <el-form :model="userInfoForm" :rules="userInfoRules" ref="userInfoForm"
+              label-width="100px" size="small" :hide-required-asterisk="true">
               <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-contacts iconfont"></i>账号</span
-                >
+                <span slot="label"><i class="icon-contacts iconfont"></i>账号</span>
                 <el-input v-model="userInfoForm.username" disabled></el-input>
               </el-form-item>
 
@@ -61,9 +49,7 @@
               </el-form-item>
 
               <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-mobile iconfont"></i>手机号码</span
-                >
+                <span slot="label"><i class="icon-mobile iconfont"></i>手机号码</span>
                 <el-input v-model="userInfoForm.phone"></el-input>
               </el-form-item>
               <el-form-item prop="name">
@@ -71,87 +57,45 @@
                 <el-input v-model="userInfoForm.email"></el-input>
               </el-form-item>
               <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-camera1 iconfont"></i>头像</span
-                >
-                <el-upload
-                  class="avatar-uploader"
-                  :action="bindImg('util/uploadfile')"
-                  :show-file-list="false"
-                  :on-success="handleEditAvatarSuccess"
-                  name="files"
-                  :data="{ id: userInfoForm.fileId }"
-                >
-                  <img
-                    v-if="userInfoForm.imgUrl"
-                    :src="bindUrl(userInfoForm.imgUrl)"
-                    class="avatar"
-                    ref="preview"
-                  />
+                <span slot="label"><i class="icon-camera1 iconfont"></i>头像</span>
+                <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+                  :show-file-list="false" :on-success="handleEditAvatarSuccess"
+                  name="files" :data="{ id: userInfoForm.fileId }">
+                  <img v-if="userInfoForm.imgUrl" :src="bindUrl(userInfoForm.imgUrl)"
+                    class="avatar" ref="preview" />
                   <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                 </el-upload>
               </el-form-item>
               <el-form-item prop="name">
-                <span slot="label"
-                  ><i class="icon-bulb iconfont"></i>自我描述</span
-                >
-                <el-input
-                  v-model="userInfoForm.description"
-                  type="textarea"
-                  :autosize="{ minRows: 3, maxRows: 6 }"
-                  resize="none"
-                ></el-input>
+                <span slot="label"><i class="icon-bulb iconfont"></i>自我描述</span>
+                <el-input v-model="userInfoForm.description" type="textarea"
+                  :autosize="{ minRows: 3, maxRows: 6 }" resize="none"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="success" @click="submitUserInfo()"
-                  >修改</el-button
-                >
+                <el-button type="success" @click="submitUserInfo()">修改</el-button>
               </el-form-item>
             </el-form>
           </div>
           <!-- 修改密码 -->
           <div class="edit-password" v-else-if="activeIndex === 2">
-            <el-form
-              :model="passwordForm"
-              :rules="passwordRules"
-              ref="passwordForm"
-              size="small"
-              label-width="100px"
-              :hide-required-asterisk="true"
-            >
+            <el-form :model="passwordForm" :rules="passwordRules" ref="passwordForm"
+              size="small" label-width="100px" :hide-required-asterisk="true">
               <el-form-item prop="oldPassword">
-                <span slot="label"
-                  ><i class="icon-lock iconfont"></i>旧密码</span
-                >
-                <el-input
-                  v-model="passwordForm.oldPassword"
-                  type="password"
-                ></el-input>
+                <span slot="label"><i class="icon-lock iconfont"></i>旧密码</span>
+                <el-input v-model="passwordForm.oldPassword" type="password"></el-input>
               </el-form-item>
               <el-form-item prop="newPassword">
-                <span slot="label"
-                  ><i class="icon-lock iconfont"></i>新密码</span
-                >
-                <el-input
-                  v-model="passwordForm.newPassword"
-                  type="password"
-                ></el-input>
+                <span slot="label"><i class="icon-lock iconfont"></i>新密码</span>
+                <el-input v-model="passwordForm.newPassword" type="password"></el-input>
               </el-form-item>
               <el-form-item prop="confirmPassword">
-                <span slot="label"
-                  ><i class="icon-lock iconfont"></i>确认密码</span
-                >
-                <el-input
-                  v-model="passwordForm.confirmPassword"
-                  type="password"
-                ></el-input>
+                <span slot="label"><i class="icon-lock iconfont"></i>确认密码</span>
+                <el-input v-model="passwordForm.confirmPassword" type="password">
+                </el-input>
               </el-form-item>
               <el-form-item>
-                <el-button
-                  type="success"
-                  @click="submitChangePassword('passwordForm')"
-                  >修改</el-button
-                >
+                <el-button type="success" @click="submitChangePassword('passwordForm')">修改
+                </el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -175,13 +119,8 @@
               </el-table-column>
               <el-table-column prop="address" label="操作" min-width="60">
                 <template v-slot="{ row }">
-                  <el-button
-                    type="primary"
-                    size="mini"
-                    @click="returnBook(row)"
-                    :disabled="row.state !== 3"
-                    >归还</el-button
-                  >
+                  <el-button type="primary" size="mini" @click="returnBook(row)"
+                    :disabled="row.state !== 3">归还</el-button>
                 </template>
                 <!-- <el-button type="danger" size="mini" disabled>归还</el-button> -->
               </el-table-column>
@@ -189,24 +128,12 @@
           </div>
           <!-- 投诉记录 -->
           <div class="suggest-records" v-else-if="activeIndex === 4">
-            <el-table
-              :data="suggestTable"
-              style="width: 100%"
-              key="suggestTable"
-            >
+            <el-table :data="suggestTable" style="width: 100%" key="suggestTable">
               <el-table-column prop="title" label="投诉标题" min-width="80">
               </el-table-column>
-              <el-table-column
-                prop="description"
-                label="投诉内容"
-                min-width="80"
-              >
+              <el-table-column prop="description" label="投诉内容" min-width="80">
               </el-table-column>
-              <el-table-column
-                prop="createTime"
-                label="投诉时间"
-                min-width="100"
-              >
+              <el-table-column prop="createTime" label="投诉时间" min-width="100">
                 <template v-slot="{ row }">
                   {{ row.createTime | formatDate }}
                 </template>
@@ -214,19 +141,13 @@
               <el-table-column prop="state" label="投诉进度" min-width="60">
                 <template v-slot="{ row }">
                   <el-tag v-if="row.state === 0">未回复</el-tag>
-                  <el-tag v-else-if="row.state === 1" type="success"
-                    >已回复</el-tag
-                  >
+                  <el-tag v-else-if="row.state === 1" type="success">已回复</el-tag>
                 </template>
               </el-table-column>
               <el-table-column label="操作" min-width="60">
                 <template v-slot="{ row }">
-                  <el-button
-                    type="primary"
-                    size="mini"
-                    @click="showSuggestDetail(row)"
-                    >详情</el-button
-                  >
+                  <el-button type="primary" size="mini" @click="showSuggestDetail(row)">详情
+                  </el-button>
                 </template>
                 <!-- <el-button type="danger" size="mini" disabled>归还</el-button> -->
               </el-table-column>
@@ -236,11 +157,7 @@
       </el-col>
     </el-row>
     <!-- 投诉详情对话框 -->
-    <el-dialog
-      :visible.sync="isSuggesDetailtDialog"
-      width="30%"
-      class="suggest-detail"
-    >
+    <el-dialog :visible.sync="isSuggesDetailtDialog" width="30%" class="suggest-detail">
       <div class="content">
         <p>
           投诉标题:<span>{{ currentSuggest.title }}</span>
@@ -259,12 +176,7 @@
         <p class="breif">
           投诉图片:
           <span>
-            <img
-              :src="bindUrl(currentSuggest.imgUrl)"
-              alt=""
-              width="100"
-              height="100"
-            />
+            <img :src="bindUrl(currentSuggest.imgUrl)" alt="" width="100" height="100" />
           </span>
         </p>
         <p>
@@ -274,12 +186,8 @@
         </p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="isSuggesDetailtDialog = false"
-          size="mini"
-          >关闭</el-button
-        >
+        <el-button type="primary" @click="isSuggesDetailtDialog = false" size="mini">关闭
+        </el-button>
       </span>
     </el-dialog>
   </div>

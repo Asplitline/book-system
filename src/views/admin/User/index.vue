@@ -64,7 +64,7 @@
     </el-container>
     <!-- dialog -->
     <el-dialog :title="['添加用户','修改用户'][this.form.flag]" :visible.sync="dialogFormVisible"
-      width="30%" @close="clearDialog('form')">
+      width="30%" @close="resetForm('form')">
       <el-form :model="form" size="small" label-width="80px" ref="form" :rules="rules">
         <el-form-item label="头像" prop="imgUrl">
           <el-upload class="avatar-uploader" :action="bindIMG('util/uploadfile')"
@@ -147,7 +147,7 @@ export default {
         this.$nextTick(async () => {
           this.form = deepClone(data)
           this.form.flag = flag
-          const file = await this.$api.getFile({ id: this.form.id })
+          const file = await this.$api.getFileById({ id: this.form.id })
           if (file.length) {
             this.$set(this.form, 'imgUrl', file[0].filename)
             this.uploadInfo = { id: file[0].id }

@@ -5,7 +5,8 @@ const TRADITION_MODEL = 2
 const base = {
     changePassword: _get('/user/changePassword'),
     login: _post('account/api/login', TRADITION_MODEL),
-    register: _post('account/api/regist')
+    register: _post('account/api/regist'),
+    upload: _post('/util/uploadfile')
 }
 // user
 const user = {
@@ -16,8 +17,9 @@ const user = {
 }
 // file
 const file = {
-    getFileList: _get('/list/list'),
-    getFile: _get('/util/getFilesByUserId'),
+    getFile: _get('/list/list'),
+    // ques id 无法修改
+    getFileById: _get('util/getFilesByUserId'),
     addFile: _post('/list/insert'),
     editFile: _put('/list/updateIgnoreNull')
 }
@@ -31,6 +33,7 @@ const category = {
 }
 // book
 const book = {
+    getBook: _get('/book/list'),
     getBookList: _get('book/pageBook'),
     addBook: _post('book/insert'),
     editBook: _put('book/updateIgnoreNull'),
@@ -55,6 +58,13 @@ const log = {
     getLogList: _get('logs/page'),
     deleteLog: _delete('logs/delete')
 }
+// errata
+const errata = {
+    getErrataList: _get('repair/pageRepair'),
+    addErrata: _post('repair/insert'),
+    editErrata: _put('repair/updateIgnoreNull'),
+    deleteErrata: _delete('repair/delete')
+}
 export default {
     ...base,
     ...category,
@@ -63,5 +73,6 @@ export default {
     ...book,
     ...correction,
     ...borrow,
-    ...log
+    ...log,
+    ...errata
 }

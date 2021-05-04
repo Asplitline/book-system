@@ -42,7 +42,7 @@
     </el-container>
     <!-- 对话框 -->
     <el-dialog :visible.sync="isLoginDiaglog" width="24%" class="loginDialog"
-      :close-on-click-modal="false" @close="clearDialog('loginForm')">
+      :close-on-click-modal="false" @close="resetForm('loginForm')">
       <el-form :model="loginForm" :rules="loginRules" ref="loginForm" size="small">
         <h4 content-position="left" class="title">登录界面</h4>
         <el-form-item prop="username">
@@ -137,7 +137,7 @@ export default {
       )
       this.isLogin = this.$store.state.isLogin
     },
-    clearDialog(formName) {
+    resetForm(formName) {
       this.$refs[formName].resetFields()
     }
   },

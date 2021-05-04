@@ -11,10 +11,11 @@
       <el-container>
         <el-header>
           <span class="title">图书管理系统</span>
-          <el-dropdown @command="handleCommand">
-            <el-avatar
-              src="https://i.picsum.photos/id/1048/800/340.jpg?hmac=zrTcMMACYRInfQA_-RqZGJDuMW47uk-g3bo5CkfPIVE">
-            </el-avatar>
+          <el-dropdown trigger="click" @command="handleCommand">
+            <span class="el-dropdown-link">
+              <el-avatar :src="bindIMG(user.avatar.filename)" v-if="user.avatar">
+              </el-avatar>
+            </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="goIndex">跳转前台</el-dropdown-item>
               <el-dropdown-item command="logOut">退出系统</el-dropdown-item>
@@ -33,6 +34,7 @@
 import { aMenu } from '@static'
 import { mapState } from 'vuex'
 import mixins from '@mixins'
+import { bindIMG } from '@utils'
 export default {
   data() {
     return {
@@ -40,23 +42,25 @@ export default {
     }
   },
   computed: {
-    ...mapState({ active: 'currentAMenu' })
+    ...mapState({ active: 'currentAMenu', user: 'currentUser' })
   },
   methods: {
-    handleCommand(val) {
-      this[val] && this[val]()
-    },
-    logOut() {
-      sessionStorage.clear()
-      this.$store.commit('setCurrentUser', null)
-      this.$router.push({ name: 'login' })
+    bindIMG,
+    handleCommand(callback) {
+      this[callback] && this[callback]()
     },
     goIndex() {
       this.$router.push({ name: 'home' })
+    },
+    async getUser() {
+      const [avatar] = await this.$api.getFileById({ id: this.user.id })
+      this.$set(this.user, 'avatar', avatar)
     }
   },
   mixins: [mixins.admin],
-  created() {}
+  created() {
+    this.getUser()
+  }
 }
 </script>
 

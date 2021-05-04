@@ -3,7 +3,8 @@ export default {
     mixins: [common],
     data () {
         return {
-            name: 'home'
+            name: 'home',
+            list: []
         }
     }
 }

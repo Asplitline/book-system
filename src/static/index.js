@@ -21,7 +21,7 @@ export const hMenu = [
     { index: 'index', name: '首页', icon: '' },
     { index: 'bookCenter', name: '图书中心', icon: '' },
     { index: 'errata', name: '书籍勘误', icon: '' },
-    { index: 'messageBoard', name: '留言板', icon: '' },
+    // { index: 'messageBoard', name: '留言板', icon: '' },
     { index: 'info', name: '个人中心', icon: '' }
 ]
 export const hMiniMenu = ['index', 'bookCenter', 'errata', 'messageBoard', 'info']
@@ -42,4 +42,10 @@ export const borrowState = [
 export const replyState = [
     { id: 0, type: 'primary', name: '未回复' },
     { id: 1, type: 'success', name: '已回复' }
+]
+
+export const errataState = [
+    { id: 0, type: 'primary', name: '待审核' },
+    { id: 1, type: 'success', name: '已通过' },
+    { id: 2, type: 'danger', name: '被驳回' }
 ]

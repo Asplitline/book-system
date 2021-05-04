@@ -46,7 +46,7 @@ export function checkEmail (rule, value, callback) {
     }
 }
 export function checkPhone (rule, value, callback) {
-    const reg = /(13\d|14[579]|15[^4\D]|17[^49\D]|18\d)\d{8}/
+    const reg = /^(13[0-9]|14[5|7]|15[0|1|2|3|4|5|6|7|8|9]|18[0|1|2|3|5|6|7|8|9])\d{8}$/
     if (!reg.test(value)) {
         return callback(new Error('手机号码格式错误'))
     } else {
@@ -59,4 +59,8 @@ export function checkBM (rule, value, callback) {
         return callback(new Error('请输入6位数字作为书籍编号'))
     }
     return callback()
+}
+
+export function getUid (randomLength) {
+    return Number(Math.random().toString().substr(2, randomLength) + Date.now()).toString(36)
 }

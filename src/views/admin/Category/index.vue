@@ -54,7 +54,7 @@
     </el-container>
     <!-- dialog -->
     <el-dialog :title="['添加分类','修改分类'][this.form.flag]" :visible.sync="dialogFormVisible"
-      width="30%" @close="clearDialog('form')">
+      width="30%" @close="resetForm('form')">
       <el-form :model="form" size="small" ref="form" :rules="rules">
         <el-form-item label="分类名" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>

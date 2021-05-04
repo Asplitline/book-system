@@ -4,30 +4,18 @@
       <!-- 搜索框 -->
       <el-row class="topSearch">
         <el-col :span="8">
-          <el-input
-            placeholder="请输入标题"
-            v-model="query.keyword"
-            @clear="getSuggest()"
-            clearable
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-search"
-              @click="getSuggest()"
-            ></el-button>
+          <el-input placeholder="请输入标题" v-model="query.keyword" @clear="getSuggest()"
+            clearable>
+            <el-button slot="append" icon="el-icon-search" @click="getSuggest()">
+            </el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
-          <el-button class="add-suggest" @click="showSuggestDialog"
-            >添加投诉</el-button
-          >
+          <el-button class="add-suggest" @click="showSuggestDialog">添加投诉</el-button>
         </el-col>
         <el-col :span="8" :offset="4">
-          <el-pagination
-            layout="prev, pager, next"
-            :total="total"
-            @current-change="handleCurrentChange"
-          >
+          <el-pagination layout="prev, pager, next" :total="total"
+            @current-change="handleCurrentChange">
           </el-pagination>
         </el-col>
       </el-row>
@@ -51,68 +39,36 @@
           </el-table-column>
           <el-table-column label="操作" min-width="100">
             <template v-slot="{ row }">
-              <el-button
-                type="primary"
-                size="mini"
-                @click="showSuggestDetail(row)"
-                >详情</el-button
-              >
+              <el-button type="primary" size="mini" @click="showSuggestDetail(row)">详情
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
       </el-row>
     </el-card>
     <!-- 添加投诉对话框 -->
-    <el-dialog
-      title="新增投诉"
-      :visible.sync="isSuggestDialog"
-      width="25%"
-      @close="clearDialog"
-    >
-      <el-form
-        :model="suggestForm"
-        :rules="suggestRules"
-        ref="suggestForm"
-        size="small"
-      >
+    <el-dialog title="新增投诉" :visible.sync="isSuggestDialog" width="25%"
+      @close="resetForm">
+      <el-form :model="suggestForm" :rules="suggestRules" ref="suggestForm" size="small">
         <el-form-item label="标题" prop="title">
           <el-input v-model="suggestForm.title"></el-input>
         </el-form-item>
         <el-form-item label="内容" prop="description">
-          <el-input
-            v-model="suggestForm.description"
-            type="textarea"
-            resize="none"
-            :autosize="{ minRows: 2, maxRows: 4 }"
-          ></el-input>
+          <el-input v-model="suggestForm.description" type="textarea" resize="none"
+            :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="图片说明" prop="imageUrl">
-          <el-upload
-            class="avatar-uploader"
-            :action="bindImg('util/uploadfile')"
-            :show-file-list="false"
-            :on-success="handleAddAvatarSuccess"
-            name="files"
-          >
-            <img
-              v-if="suggestForm.imageUrl"
-              :src="suggestForm.imageUrl"
-              class="avatar"
-            />
+          <el-upload class="avatar-uploader" :action="bindImg('util/uploadfile')"
+            :show-file-list="false" :on-success="handleAddAvatarSuccess" name="files">
+            <img v-if="suggestForm.imageUrl" :src="suggestForm.imageUrl" class="avatar" />
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="isSuggestDialog = false" size="mini"
-          >取 消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="submitSuggest('suggestForm')"
-          size="mini"
-          >新 增</el-button
-        >
+        <el-button @click="isSuggestDialog = false" size="mini">取 消</el-button>
+        <el-button type="primary" @click="submitSuggest('suggestForm')" size="mini">新 增
+        </el-button>
       </span>
     </el-dialog>
     <!-- 投诉详情对话框 -->
@@ -135,12 +91,8 @@
         <p class="breif">
           投诉图片:
           <span>
-            <img
-              :src="bindUrl(suggestFormDetail.imageUrl)"
-              alt=""
-              width="100"
-              height="100"
-            />
+            <img :src="bindUrl(suggestFormDetail.imageUrl)" alt="" width="100"
+              height="100" />
           </span>
         </p>
         <p>
@@ -150,12 +102,8 @@
         </p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button
-          type="primary"
-          @click="isSuggesDetailtDialog = false"
-          size="mini"
-          >关闭</el-button
-        >
+        <el-button type="primary" @click="isSuggesDetailtDialog = false" size="mini">关闭
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -268,7 +216,7 @@ export default {
       this.$set(this.suggestFormDetail, 'imageUrl', file.name)
     },
     // 清空添加投诉
-    clearDialog() {
+    resetForm() {
       this.suggestForm = {}
     }
   },

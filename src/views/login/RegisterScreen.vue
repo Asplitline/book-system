@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { getUid } from '@utils'
 export default {
   props: {
     form: Object,
@@ -34,6 +35,14 @@ export default {
           level: 0,
           createTime: Date.now(),
           updateTime: Date.now()
+        })
+        await this.$api.addFile({
+          createTime: Date.now(),
+          filename: 'avatar_placeholder.png',
+          id: getUid(32),
+          size: 0,
+          updateTime: Date.now(),
+          userId: getUid(32)
         })
         const { success } = await this.$api.register(data)
         if (success) {

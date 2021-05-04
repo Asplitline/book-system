@@ -51,7 +51,7 @@
     </el-container>
     <!-- dialog -->
     <el-dialog :title="['添加图书','修改书籍'][this.form.flag]" :visible.sync="dialogFormVisible"
-      width="30%" @close="clearDialog('form')">
+      width="30%" @close="resetForm('form')">
       <el-form :model="form" size="small" ref="form" :rules="rules" label-width="80px">
         <el-form-item label="封面" prop="imgUrl">
           <el-upload class="avatar-uploader" :action="bindIMG('util/uploadfile')"
@@ -153,7 +153,7 @@ export default {
           this.form = deepClone(data)
           this.form.flag = flag
           this.form.bm = this.form.bm.split('BM-')[1]
-          const file = await this.$api.getFile({ id: this.form.id })
+          const file = await this.$api.getFileById({ id: this.form.id })
           if (file.length) {
             this.$set(this.form, 'imgUrl', file[0].filename)
             this.uploadInfo = { id: file[0].id }
@@ -191,7 +191,7 @@ export default {
   created() {
     this.fetchData()
     this.getAllCategory(this)
-}
+  }
 }
 </script>
 

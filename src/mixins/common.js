@@ -1,3 +1,5 @@
+import { mapMutations } from 'vuex'
+
 export default {
     data () {
         return {
@@ -10,6 +12,7 @@ export default {
         }
     },
     methods: {
+        ...mapMutations(['setCurrentUser']),
         handleSizeChange (value, callback) {
             this.query.size = value
             callback && callback()
@@ -22,8 +25,21 @@ export default {
             this.query.keyword = null
             callback && callback()
         },
-        clearDialog (formName) {
+        resetForm (formName) {
             this.$refs[formName].resetFields()
+        },
+        handleSuccess (success, info, callback) {
+            if (success) {
+                this.$message.success(`${info}成功`)
+                callback && callback()
+            } else {
+                this.$message.error(`${info}失败`)
+            }
+        },
+        logOut () {
+            sessionStorage.clear()
+            this.$store.commit('setCurrentUser', null)
+            this.$router.push({ name: 'login' })
         }
     }
 }
