@@ -14,6 +14,7 @@ const MessageBoard = () => import(/* webpackChunkName:'h-message-board' */'@view
 const Info = () => import(/* webpackChunkName:'h-info' */'@views/home/Info')
 // home -
 const BookDetail = () => import(/* webpackChunkName:'h-book-detail' */'@views/home/BookCenter/BookDetail')
+const BookChapter = () => import(/* webpackChunkName:'h-book-chapter' */'@views/home/BookCenter/BookChapter')
 // admin
 const User = () => import(/* webpackChunkName:'a-user' */'@views/admin/User')
 const Category = () => import(/* webpackChunkName:'a-category' */'@views/admin/Category')
@@ -40,7 +41,8 @@ const routes = [
     children: [
       { path: '/index', name: 'index', component: Index },
       { path: '/bookCenter', name: 'bookCenter', component: BookCenter },
-      { path: '/bookCenter/:id', name: 'bookDetail', component: BookDetail },
+      { path: '/bookCenter/:id', name: 'bookDetail', component: BookDetail, props: true },
+      { path: '/bookCenter/:id/:cid', name: 'bookChapter', component: BookChapter },
       { path: '/errata', name: 'errata', component: Errata },
       { path: '/messageBoard', name: 'messageBoard', component: MessageBoard },
       { path: '/info', name: 'info', component: Info }

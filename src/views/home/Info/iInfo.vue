@@ -23,7 +23,7 @@
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
       </el-form-item>
-      <el-form-item prop="name" label="自我描述">
+      <el-form-item prop="description" label="自我描述">
         <el-input v-model="form.description" type="textarea"
           :autosize="{ minRows: 3, maxRows: 6 }" resize="none"></el-input>
       </el-form-item>
@@ -59,7 +59,10 @@ export default {
           { required: true, message: '输入电子邮箱', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
         ],
-        avatar: [{ required: true, message: '选择头像', trigger: 'blur' }]
+        avatar: [{ required: true, message: '选择头像', trigger: 'blur' }],
+        description: [
+          { required: true, message: '请输入个人简介', trigger: 'blur' }
+        ]
       },
       uploadInfo: {},
       form: {}
@@ -79,7 +82,7 @@ export default {
         id: this.form.id
       })
       this.$set(this.form, 'avatar', avatar)
-      this.uploadInfo = { id: this.form.avatar.id }
+      this.uploadInfo = { id: avatar && avatar.id }
     },
     submit(formName) {
       this.$refs[formName].validate(async (valid) => {

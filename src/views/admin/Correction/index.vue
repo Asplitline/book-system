@@ -10,14 +10,14 @@
       <el-main>
         <!-- table -->
         <el-table :data="tableData" border style="width: 100%">
-          <el-table-column prop="title" label="标题" min-width="80">
+          <el-table-column prop="bookName" label="书籍" min-width="80">
           </el-table-column>
           <el-table-column prop="description" label="内容" min-width="100">
           </el-table-column>
           <el-table-column prop="state" label="状态" min-width="80">
             <template v-slot="{row}">
-              <el-tag :type="replyState[row.state].type" v-if="replyState[row.state]">
-                {{replyState[row.state].name}}
+              <el-tag :type="errataState[row.state].type" v-if="errataState[row.state]">
+                {{errataState[row.state].name}}
               </el-tag>
             </template>
           </el-table-column>
@@ -40,11 +40,17 @@
               </el-input>
             </template>
             <template slot-scope="{row}">
-              <el-link type="primary" :underline="false" @click="showDialog(1,row)">
-                修改勘误
+              <el-link type="warning" :underline="false" @click="handleErrata(row,2)"
+                :disabled="row.state!==0">
+                驳回勘误
+              </el-link>
+              <el-link type="success" :underline="false" @click="handleErrata(row,1)"
+                :disabled="row.state!==0">
+                通过勘误
               </el-link>
               <el-link type="danger" :underline="false"
-                @click="deleteById($api.deleteCorrection,fetchData,row.id,'勘误')">
+                @click="deleteById($api.deleteErrata,fetchData,row.id,'勘误')"
+                :disabled="row.state===0">
                 删除勘误
               </el-link>
             </template>
@@ -61,24 +67,39 @@
 </template>
 
 <script>
-// todo delete correction
 import mixins from '@mixins'
-import { replyState } from '@static'
+import { errataState } from '@static'
+import { deepClone } from '@utils'
 export default {
   mixins: [mixins.admin],
   data() {
     return {
-      replyState
+      errataState
     }
   },
   methods: {
     async fetchData() {
-      const { list, total } = await this.$api.getCorrectionList(this.query)
+      const { list, total } = await this.$api.getErrataList(this.query)
       this.tableData = list.map((item) => {
         // item.lxInfo = this.getCategoryById(item.lx)
         return item
       })
       this.total = total
+    },
+    async handleErrata(data, flag) {
+      this.handleConfirm(
+        `${flag === 1 ? '通过用户勘误' : '拒绝用户勘误'}`,
+        async () => {
+          const tData = deepClone(data)
+          tData.state = flag
+          const { success } = await this.$api.editErrata(tData)
+          this.handleSuccess(
+            success,
+            `${flag === 1 ? '通过勘误' : '拒绝勘误'}`,
+            this.fetchData
+          )
+        }
+      )
     }
   },
   created() {

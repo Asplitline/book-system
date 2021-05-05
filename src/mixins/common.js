@@ -40,6 +40,13 @@ export default {
             sessionStorage.clear()
             this.$store.commit('setCurrentUser', null)
             this.$router.push({ name: 'login' })
+        },
+        handleConfirm (info, success) {
+            this.$confirm(`即将${info}，是否继续 ~`, '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(success)
         }
     }
 }

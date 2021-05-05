@@ -78,7 +78,8 @@ import {
     Message,
     Notification,
     Avatar,
-    Popconfirm
+    Popconfirm,
+    Drawer
 } from 'element-ui'
 Vue.use(Pagination)
 Vue.use(Dialog)
@@ -155,6 +156,7 @@ Vue.use(PageHeader)
 Vue.use(CascaderPanel)
 Vue.use(Avatar)
 Vue.use(Popconfirm)
+Vue.use(Drawer)
 Vue.use(Loading.directive)
 Vue.prototype.$loading = Loading.service
 Vue.prototype.$msgbox = MessageBox

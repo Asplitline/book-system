@@ -11,7 +11,8 @@ export default new Vuex.Store({
     currentBook: getSession('currentBook'),
     allCategory: getSession('allCategory'),
     allFile: getSession('allFile'),
-    allBook: getSession('allBook')
+    allBook: getSession('allBook'),
+    allUser: getSession('allUser')
   },
   getters: {
     getCategoryById: (state) => (id) => {
@@ -24,6 +25,10 @@ export default new Vuex.Store({
     getMiniBook: (state) => () => {
       return state.allBook &&
         state.allBook.map(({ id, name }) => ({ id, name }))
+    },
+    getUserById: (state) => (id) => {
+      return state.allUser &&
+        state.allUser.find(item => item.id === id)
     }
   },
   mutations: {
@@ -54,6 +59,10 @@ export default new Vuex.Store({
     setAllBook (state, data) {
       state.allBook = data
       setSession('allBook', data)
+    },
+    setAllUser (state, data) {
+      state.allUser = data
+      setSession('allUser', data)
     }
   },
   actions: {
@@ -68,6 +77,10 @@ export default new Vuex.Store({
     async getAllBook ({ commit }, _this) {
       const data = await _this.$api.getBook()
       commit('setAllBook', data)
+    },
+    async getAllUser ({ commit }, _this) {
+      const data = await _this.$api.getUser()
+      commit('setAllUser', data)
     }
   }
 })

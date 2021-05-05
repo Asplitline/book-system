@@ -32,7 +32,11 @@
               </el-input>
             </template>
             <template slot-scope="{row}">
-              <el-link type="primary" :underline="false" @click="showDialog(1,row)">
+              <!-- todo book detail -->
+              <el-link type="primary" :underline="false" @click="goToBookDetail(1,row)">
+                图书详情
+              </el-link>
+              <el-link type="success" :underline="false" @click="showDialog(1,row)">
                 修改图书
               </el-link>
               <el-link type="danger" :underline="false"
@@ -50,6 +54,7 @@
       </el-pagination>
     </el-container>
     <!-- dialog -->
+    <!-- todo add|edit avatar -->
     <el-dialog :title="['添加图书','修改书籍'][this.form.flag]" :visible.sync="dialogFormVisible"
       width="30%" @close="resetForm('form')">
       <el-form :model="form" size="small" ref="form" :rules="rules" label-width="80px">

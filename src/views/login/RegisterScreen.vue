@@ -34,20 +34,21 @@ export default {
         const data = Object.assign({}, this.form, {
           level: 0,
           createTime: Date.now(),
-          updateTime: Date.now()
-        })
-        await this.$api.addFile({
-          createTime: Date.now(),
-          filename: 'avatar_placeholder.png',
-          id: getUid(32),
-          size: 0,
           updateTime: Date.now(),
-          userId: getUid(32)
+          id: getUid()
         })
-        const { success } = await this.$api.register(data)
+        const { success, data: user } = await this.$api.register(data)
         if (success) {
           this.$emit('change-nav', 'loginScreen')
           this.$message.success('注册成功...请开始登录吧')
+          await this.$api.addFile({
+            createTime: Date.now(),
+            filename: 'avatar_placeholder.jpg',
+            id: getUid(),
+            size: 0,
+            updateTime: Date.now(),
+            userId: user.id
+          })
         } else {
           this.$message.error('注册失败...')
         }

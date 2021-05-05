@@ -10,6 +10,7 @@ const base = {
 }
 // user
 const user = {
+    getUser: _get('user/list'),
     getUserList: _get('user/pageUser'),
     addUser: _post('user/insert'),
     editUser: _put('user/updateIgnoreNull'),
@@ -40,12 +41,13 @@ const book = {
     deleteBook: _delete('book/delete')
 }
 // correction
-const correction = {
-    getCorrectionList: _get('addvice/pageAddvice'),
-    addCorrection: _post('addvice/insert'),
-    editCorrection: _put('addvice/updateIgnoreNull'),
-    deleteCorrection: _delete('addvice/delete')
-}
+// tag advice api ? use
+// const correction = {
+//     getCorrectionList: _get('addvice/pageAddvice'),
+//     addCorrection: _post('addvice/insert'),
+//     editCorrection: _put('addvice/updateIgnoreNull'),
+//     deleteCorrection: _delete('addvice/delete')
+// }
 // borrow
 const borrow = {
     getBorrowList: _get('borrow/pageBorrow'),
@@ -71,7 +73,7 @@ export default {
     ...user,
     ...file,
     ...book,
-    ...correction,
+    // ...correction,
     ...borrow,
     ...log,
     ...errata

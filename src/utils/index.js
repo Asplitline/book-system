@@ -61,6 +61,15 @@ export function checkBM (rule, value, callback) {
     return callback()
 }
 
-export function getUid (randomLength) {
-    return Number(Math.random().toString().substr(2, randomLength) + Date.now()).toString(36)
+// done 32dig id
+export function getUid (dig = 32) {
+    const s = []
+    const hexDigits = '0123456789ABCDEF'
+    for (var i = 0; i < dig; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+    }
+    s[14] = '4'
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1)
+    return s.join('')
+    // return Number(Math.random().toString().substr(2, randomLength) + Date.now()).toString(36)
 }

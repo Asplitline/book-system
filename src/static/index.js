@@ -10,7 +10,7 @@ export const aMenu = [
     { index: 'user', name: '用户管理', icon: '' },
     { index: 'category', name: '分类管理', icon: '' },
     { index: 'book', name: '书籍管理', icon: '' },
-    { index: 'message', name: '留言管理', icon: '' },
+    // { index: 'message', name: '留言管理', icon: '' },
     { index: 'correction', name: '勘误管理', icon: '' },
     { index: 'borrow', name: '借阅管理', icon: '' },
     { index: 'log', name: '日志管理', icon: '' }
@@ -32,11 +32,11 @@ export const levelState = [
 ]
 
 export const borrowState = [
-    { id: 0, type: 'primary', name: '审核中' },
-    { id: 1, type: 'warning', name: '借阅失败' },
-    { id: 2, type: 'success', name: '借阅中' },
-    { id: 3, type: 'danger', name: '归还中' },
-    { id: 4, type: 'info', name: '已归还' }
+    { id: 0, type: 'primary', name: '审核中', value: '申请中..' },
+    { id: 1, type: 'warning', name: '已拒绝', value: '被拒绝..' },
+    { id: 2, type: 'success', name: '借阅中', value: '已借阅..' },
+    { id: 3, type: 'danger', name: '归还中', value: '归还中..' },
+    { id: 4, type: 'info', name: '已归还', value: '借阅图书' }
 ]
 
 export const replyState = [
@@ -47,5 +47,5 @@ export const replyState = [
 export const errataState = [
     { id: 0, type: 'primary', name: '待审核' },
     { id: 1, type: 'success', name: '已通过' },
-    { id: 2, type: 'danger', name: '被驳回' }
+    { id: 2, type: 'danger', name: '已驳回' }
 ]

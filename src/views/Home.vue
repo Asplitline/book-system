@@ -1,6 +1,6 @@
 <template>
-  <el-container class="home">
-    <el-header style="height:61px">
+  <el-container class="home" :class="{'index':isIndex}">
+    <el-header style="height:61px" v-show="!isIndex">
       <el-menu :default-active="'/'+currentHMenu" mode="horizontal" class="w"
         active-text-color="#cc2929" router>
         <el-menu-item :index="'/'+item.index" v-for="item in hMenu" :key="item.index">
@@ -41,6 +41,9 @@ export default {
     ...mapState(['currentHMenu', 'currentUser']),
     user() {
       return this.currentUser
+    },
+    isIndex() {
+      return ['index'].includes(this.currentHMenu)
     }
   },
   methods: {
@@ -92,10 +95,15 @@ export default {
 .el-main {
   flex: 1;
   // background-color: #fff;
-  padding: 10px 0;
+  // padding: 10px 0;
 }
 
 .h-info {
   float: right;
+}
+
+.home.index {
+  position: relative;
+  background-color: #fff7f7;
 }
 </style>
