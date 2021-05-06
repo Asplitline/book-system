@@ -35,7 +35,8 @@ export default {
           level: 0,
           createTime: Date.now(),
           updateTime: Date.now(),
-          id: getUid()
+          id: getUid(),
+          password: this[formName].cPassword
         })
         const { success, data: user } = await this.$api.register(data)
         if (success) {

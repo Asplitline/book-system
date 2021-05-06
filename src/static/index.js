@@ -2,6 +2,7 @@ export const BASE_URL = 'http://localhost:8088/'
 export const IMG_URL = 'http://localhost:8088/'
 export const ADD = 0
 export const EDIT = 1
+export const SHOW = 2
 export const NORMAL = 0
 export const ADMIN = 1
 export const DEFAULT_PWD = 123456
@@ -32,10 +33,10 @@ export const levelState = [
 ]
 
 export const borrowState = [
-    { id: 0, type: 'primary', name: '审核中', value: '申请中..' },
-    { id: 1, type: 'warning', name: '已拒绝', value: '被拒绝..' },
-    { id: 2, type: 'success', name: '借阅中', value: '已借阅..' },
-    { id: 3, type: 'danger', name: '归还中', value: '归还中..' },
+    { id: 0, type: 'primary', name: '审核中', value: '申请中 ~' },
+    { id: 1, type: 'warning', name: '已拒绝', value: '被拒绝 ~' },
+    { id: 2, type: 'success', name: '借阅中', value: '已借阅 ~' },
+    { id: 3, type: 'danger', name: '归还中', value: '归还中 ~' },
     { id: 4, type: 'info', name: '已归还', value: '借阅图书' }
 ]
 

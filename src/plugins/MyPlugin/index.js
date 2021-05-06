@@ -21,6 +21,9 @@ MyPlugin.install = (Vue, options) => {
             return `${year}-${month}-${day} ${hour}:${minute}`
         }
     })
+    Vue.filter('ch', (val) => {
+        return `第${val}章`
+    })
 }
 
 export default MyPlugin

@@ -11,8 +11,11 @@ module.exports = {
                 "element-ui": "ElementUI",
                 "vue": 'Vue',
                 'vue-router': 'VueRouter',
-                "axios": 'axios',
-                'vue-quill-editor': 'VueQuillEditor',
+                "axios": 'axios'
+            })
+            config.optimization.minimizer('terser').tap((args) => {
+                args[0].terserOptions.compress.drop_console = true
+                return args
             })
             config.plugin('html').tap(args => {
                 args[0].isProd = true
@@ -28,7 +31,6 @@ module.exports = {
             })
         })
         config.resolve.alias
-            .set('@components', load('./src/components'))
             .set('@css', load('./src/assets/css'))
             .set('@views', load('./src/views'))
             .set('@mixins', load('./src/mixins'))

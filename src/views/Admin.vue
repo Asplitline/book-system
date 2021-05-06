@@ -2,8 +2,8 @@
   <div class="admin">
     <el-container style="height:100vh">
       <el-aside width="200px">
-        <el-menu router :default-active="active">
-          <el-menu-item :index="item.index" v-for="item in aMenu" :key="item.index">
+        <el-menu router :default-active="'/'+active" active-text-color="#cc2929">
+          <el-menu-item :index="'/'+item.index" v-for="item in aMenu" :key="item.index">
             {{item.name}}
           </el-menu-item>
         </el-menu>
@@ -90,5 +90,9 @@ export default {
   .el-avatar {
     vertical-align: middle;
   }
+}
+.el-menu-item:focus,
+.el-menu-item:hover {
+  background-color: #ffe9e8;
 }
 </style>

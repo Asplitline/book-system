@@ -20,44 +20,48 @@
           {{book.description}}
         </div>
         <div class="btns">
-          <!-- todo <a> state -->
-          <a href="javascript:;" class="borrow" @click="borrowBook"
-            v-if="currentState===0">借阅图书</a>
-          <a href="javascript:;" class="borrow" @click="borrowBook"
-            v-else-if="currentState===1">借阅中...</a>
-          <a href="javascript:;" class="borrow" @click="borrowBook"
-            v-else-if="currentState===2">借阅被拒绝</a>
-          <a href="javascript:;" class="read">在线阅读</a>
+          <!-- done <a> state -->
+          <a href="javascript:;" class="borrow" :class="{'ban':currentState!==4}"
+            @click="borrowBook">{{borrowState[currentState].value}}</a>
+          <a href="javascript:;" class="read"
+            :class="{'ban':(currentState!==2&&currentState!==3)||chapters.length===0}"
+            @click="readBook(1)">在线阅读</a>
         </div>
       </div>
     </div>
     <div class="b-chapters">
-      <h4>章节列表 <small>共12章</small></h4>
-      <ul class="c-list">
-        <li class="c-item">
-          <a href="javascript:;"> 第一章：正经人谁唱歌啊</a>
-        </li>
-        <li class="c-item">
-          <a href="javascript:;"> 第二章：原创歌曲</a>
-        </li>
-        <li class="c-item">
-          <a href="javascript:;"> 第三章：危！智商告急！</a>
-        </li>
-      </ul>
+      <template v-if="chapters.length">
+        <h4>章节列表 <small>共{{chapters.length}}章</small></h4>
+        <ul class="c-list" :class="{'mask':currentState!==2&&currentState!==3}">
+          <li class="c-item" v-for="item in chapters" :key="item.id">
+            <a href="javascript:;" @click="readBook(item)"> {{item.indexs | ch }}
+              {{item.title}}</a>
+          </li>
+        </ul>
+      </template>
+      <template v-else>
+        <div class="not-found" style="background-color:#fff7f7;margin-top:20px;">
+          暂无内容,联系管理员添加...
+        </div>
+      </template>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import { bindIMG } from '@utils'
 import mixin from '@mixins'
+import { borrowState } from '@static'
 export default {
   mixins: [mixin.home],
   props: ['id'],
   data() {
     return {
-      list: []
+      list: [],
+      borrowState,
+      chapters: [],
+      defaultChapter: ''
     }
   },
   computed: {
@@ -66,12 +70,21 @@ export default {
       return this.list.filter((item) => item.bookId === this.id)
     },
     currentState() {
-      const res = this.currentBorrow[0] || {}
-      return res.state || 0
+      const res = this.currentBorrow[0] || { state: 4 }
+      return res.state
     }
   },
   methods: {
+    ...mapMutations(['setCurrentChapter']),
     bindIMG,
+    async fetchChapter() {
+      this.chapters = await this.$api.getChapterById({ bookId: this.id })
+      this.chapters.sort((a, b) => {
+        return a.indexs - b.indexs
+      })
+      console.log(this.chapters)
+      this.defaultChapter = this.chapters[0].id || ''
+    },
     borrowBook() {
       this.handleConfirm('借阅图书', async () => {
         const { success } = await this.$api.addBorrow({
@@ -85,6 +98,7 @@ export default {
         })
         if (success) {
           this.$message.success('成功提交...等待管理员审核~')
+          this.validateBorrow()
         } else {
           this.$message.error('提交失败...')
         }
@@ -94,10 +108,18 @@ export default {
       this.query.keyword = this.user.id
       const { list } = await this.$api.getBorrowList(this.query)
       this.list = list
+    },
+    readBook(data) {
+      this.setCurrentChapter(data)
+      this.$router.push({
+        name: 'bookChapter',
+        params: { id: this.id, cid: data.id }
+      })
     }
   },
   created() {
     this.validateBorrow()
+    this.fetchChapter()
   }
 }
 </script>
@@ -186,7 +208,7 @@ export default {
   .c-list {
     display: flex;
     border: 1px solid #e0e0e0;
-    padding: 20px;
+    padding: 40px;
     .c-item {
       width: 33.33%;
       // text-align: center;
@@ -198,6 +220,31 @@ export default {
         }
       }
     }
+    &.mask {
+      position: relative;
+      background-color: #ffecec;
+      &::before {
+        position: absolute;
+        content: '解锁后可看...';
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #cc2929;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      a {
+        pointer-events: none;
+        color: #999;
+      }
+    }
   }
+}
+
+// done ban click
+.ban {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.8;
 }
 </style>

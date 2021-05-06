@@ -76,7 +76,7 @@
 </template>
 
 <script>
-// todo search category
+// done search category
 import mixins from '@mixins'
 import { ADD, EDIT } from '@static'
 import { deepClone } from '@utils'

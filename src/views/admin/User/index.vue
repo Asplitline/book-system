@@ -107,7 +107,7 @@
 <script>
 import mixins from '@mixins'
 import { levelState, ADD, EDIT, DEFAULT_PWD } from '@static'
-import { deepClone, bindIMG, checkEmail, checkPhone } from '@utils'
+import { deepClone, bindIMG, checkEmail, checkPhone, getUid } from '@utils'
 export default {
   data() {
     return {
@@ -143,7 +143,6 @@ export default {
       if (flag === ADD) {
         this.form.flag = flag
       } else if (flag === EDIT) {
-        // this.$api
         this.$nextTick(async () => {
           this.form = deepClone(data)
           this.form.flag = flag
@@ -151,6 +150,17 @@ export default {
           if (file.length) {
             this.$set(this.form, 'imgUrl', file[0].filename)
             this.uploadInfo = { id: file[0].id }
+          } else {
+            const file = {
+              userId: this.form.id,
+              id: getUid(),
+              createTime: Date.now(),
+              updateTime: Date.now(),
+              filename: 'avatar_placeholder.jpg',
+              size: 0
+            }
+            await this.$api.addFile(file)
+            this.uploadInfo = { id: file.id }
           }
         })
       }

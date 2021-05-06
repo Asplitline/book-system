@@ -1,9 +1,13 @@
 <template>
   <el-card class="i-borrow">
     <el-table :data="tableData" style="width: 100%" key="borrow">
-      <el-table-column prop="bookName" label="书籍" width="180">
+      <el-table-column prop="bookName" label="书籍" min-width="120">
       </el-table-column>
-      <el-table-column prop="description" label="内容" width="180">
+      <el-table-column prop="createTime" label="创建时间" min-width="120">
+        <template v-slot="{row}">{{row.createTime | formatDate}}</template>
+      </el-table-column>
+      <el-table-column prop="updateTime" label="更新时间" min-width="120">
+        <template v-slot="{row}">{{row.updateTime | formatDate}}</template>
       </el-table-column>
       <el-table-column prop="state" label="状态">
         <template v-slot="{row}">
@@ -12,7 +16,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" min-width="120px">
         <template v-slot="{row}">
           <el-link type="success" :underline="false" :disabled="row.state!==2"
             @click="returnBook(row)">

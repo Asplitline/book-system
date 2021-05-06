@@ -19,7 +19,7 @@ const user = {
 // file
 const file = {
     getFile: _get('/list/list'),
-    // ques id 无法修改
+    // done id 无法修改
     getFileById: _get('util/getFilesByUserId'),
     addFile: _post('/list/insert'),
     editFile: _put('/list/updateIgnoreNull')
@@ -67,6 +67,20 @@ const errata = {
     editErrata: _put('repair/updateIgnoreNull'),
     deleteErrata: _delete('repair/delete')
 }
+// comment
+const comment = {
+    getComment: _put('comment/getComment'),
+    addComment: _post('comment/insert'),
+    editComment: _put('comment/update'),
+    deleteComment: _delete('comment/delete')
+}
+// chapter
+const chapter = {
+    getChapterById: _get('chapter/getByBookId'),
+    addChapter: _post('chapter/insert'),
+    editChapter: _put('chapter/update'),
+    deleteChapter: _delete('chapter/delete')
+}
 export default {
     ...base,
     ...category,
@@ -76,5 +90,7 @@ export default {
     // ...correction,
     ...borrow,
     ...log,
-    ...errata
+    ...errata,
+    ...comment,
+    ...chapter
 }

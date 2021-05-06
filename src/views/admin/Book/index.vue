@@ -32,8 +32,8 @@
               </el-input>
             </template>
             <template slot-scope="{row}">
-              <!-- todo book detail -->
-              <el-link type="primary" :underline="false" @click="goToBookDetail(1,row)">
+              <!-- done book detail -->
+              <el-link type="primary" :underline="false" @click="goToBookDetail(row)">
                 图书详情
               </el-link>
               <el-link type="success" :underline="false" @click="showDialog(1,row)">
@@ -54,7 +54,7 @@
       </el-pagination>
     </el-container>
     <!-- dialog -->
-    <!-- todo add|edit avatar -->
+    <!-- done add|edit avatar -->
     <el-dialog :title="['添加图书','修改书籍'][this.form.flag]" :visible.sync="dialogFormVisible"
       width="30%" @close="resetForm('form')">
       <el-form :model="form" size="small" ref="form" :rules="rules" label-width="80px">
@@ -107,9 +107,9 @@
 
 <script>
 import mixins from '@mixins'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import { EDIT, ADD, PREFIX_BOOK } from '@static'
-import { deepClone, bindIMG, checkBM } from '@utils'
+import { deepClone, bindIMG, checkBM, getUid } from '@utils'
 export default {
   data() {
     return {
@@ -140,6 +140,7 @@ export default {
   mixins: [mixins.admin],
   methods: {
     ...mapActions(['getAllCategory']),
+    ...mapMutations(['setCurrentBook']),
     bindIMG,
     async fetchData() {
       const { list, total } = await this.$api.getBookList(this.query)
@@ -150,7 +151,6 @@ export default {
       this.total = total
     },
     showDialog(flag, data) {
-      this.dialogFormVisible = true
       if (flag === ADD) {
         this.form.flag = flag
       } else if (flag === EDIT) {
@@ -162,9 +162,21 @@ export default {
           if (file.length) {
             this.$set(this.form, 'imgUrl', file[0].filename)
             this.uploadInfo = { id: file[0].id }
+          } else {
+            const file = {
+              userId: this.form.id,
+              id: getUid(),
+              createTime: Date.now(),
+              updateTime: Date.now(),
+              filename: 'avatar_placeholder.jpg',
+              size: 0
+            }
+            await this.$api.addFile(file)
+            this.uploadInfo = { id: file.id }
           }
         })
       }
+      this.dialogFormVisible = true
     },
     handleAvatarSuccess(res, file) {
       this.$set(this.form, 'imgUrl', file.name)
@@ -186,7 +198,12 @@ export default {
           this.handleSuccess(success, '修改书籍', this.fetchData)
         }
         this.dialogFormVisible = false
+        this.uploadInfo = {}
       })
+    },
+    goToBookDetail(data) {
+      this.setCurrentBook(data)
+      this.$router.push({ name: 'chapter-list', params: { id: data.id } })
     }
   },
   computed: {

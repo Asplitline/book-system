@@ -9,6 +9,7 @@ export default new Vuex.Store({
     currentHMenu: getSession('hMenu'),
     currentUser: getSession('currentUser'),
     currentBook: getSession('currentBook'),
+    currentChapter: getSession('currentChapter'),
     allCategory: getSession('allCategory'),
     allFile: getSession('allFile'),
     allBook: getSession('allBook'),
@@ -47,6 +48,10 @@ export default new Vuex.Store({
     setCurrentBook (state, data) {
       state.currentBook = data
       setSession('currentBook', data)
+    },
+    setCurrentChapter (state, data) {
+      state.currentChapter = data
+      setSession('currentChapter', data)
     },
     setAllCategory (state, data) {
       state.allCategory = data

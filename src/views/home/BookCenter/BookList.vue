@@ -14,7 +14,7 @@
           </h4>
           <div class="author">{{item.author}}</div>
           <div class="description">{{item.description}}</div>
-          <div class="tags"><span>{{item.lxInfo.name}}</span></div>
+          <div class="tags" v-if="item.lxInfo"><span>{{item.lxInfo.name}}</span></div>
         </div>
       </li>
     </ul>
@@ -42,10 +42,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['getFileById']),
+    ...mapGetters(['getFileById', 'getCategoryById']),
     books() {
       const res = this.data.filter((item) => {
         item.book = this.getFileById(item.id)
+        item.lxInfo = this.getCategoryById(item.id)
         return item
       })
       if (this.nav === '') {

@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { bindIMG, checkEmail, checkPhone, deepClone } from '@utils'
+import { bindIMG, checkEmail, checkPhone, deepClone, getUid } from '@utils'
 import { mapMutations, mapState } from 'vuex'
 import mixin from '@mixins'
 export default {
@@ -78,16 +78,30 @@ export default {
       })
     },
     async getUser() {
-      const [avatar] = await this.$api.getFileById({
+      this.form = deepClone(this.currentUser)
+      const file = await this.$api.getFileById({
         id: this.form.id
       })
-      this.$set(this.form, 'avatar', avatar)
-      this.uploadInfo = { id: avatar && avatar.id }
+      if (file.length) {
+        this.$set(this.form, 'avatar', file[0])
+        this.uploadInfo = { id: file[0].id }
+      } else {
+        this.$set(this.form, 'avatar', { filename: 'avatar_placeholder.jpg' })
+        const file = {
+          userId: this.form.id,
+          id: getUid(),
+          createTime: Date.now(),
+          updateTime: Date.now(),
+          filename: 'avatar_placeholder.jpg',
+          size: 0
+        }
+        await this.$api.addFile(file)
+        this.uploadInfo = { id: file.id }
+      }
     },
     submit(formName) {
       this.$refs[formName].validate(async (valid) => {
         if (!valid) return
-        console.log(this[formName])
         this[formName].updateTime = Date.now()
         const { success } = await this.$api.editUser(this[formName])
         this.handleSuccess(success, '修改用户', () => {
@@ -100,7 +114,6 @@ export default {
     ...mapState(['currentUser'])
   },
   created() {
-    this.form = deepClone(this.currentUser)
     this.getUser()
   }
 }

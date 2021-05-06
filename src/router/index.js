@@ -23,6 +23,8 @@ const Message = () => import(/* webpackChunkName:'a-message' */'@views/admin/Mes
 const Correction = () => import(/* webpackChunkName:'a-correction' */'@views/admin/Correction')
 const Borrow = () => import(/* webpackChunkName:'a-borrow' */'@views/admin/Borrow')
 const Log = () => import(/* webpackChunkName:'a-log' */'@views/admin/Log')
+// admin -
+const ChapterList = () => import(/* webpackChunkName:'a-chapter-list' */'@views/admin/Book/ChapterList')
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
@@ -42,7 +44,7 @@ const routes = [
       { path: '/index', name: 'index', component: Index },
       { path: '/bookCenter', name: 'bookCenter', component: BookCenter },
       { path: '/bookCenter/:id', name: 'bookDetail', component: BookDetail, props: true },
-      { path: '/bookCenter/:id/:cid', name: 'bookChapter', component: BookChapter },
+      { path: '/bookCenter/:id/:cid', name: 'bookChapter', component: BookChapter, props: true },
       { path: '/errata', name: 'errata', component: Errata },
       { path: '/messageBoard', name: 'messageBoard', component: MessageBoard },
       { path: '/info', name: 'info', component: Info }
@@ -57,6 +59,7 @@ const routes = [
       { path: '/user', name: 'user', component: User },
       { path: '/category', name: 'category', component: Category },
       { path: '/book', name: 'book', component: Book },
+      { path: '/book/:id', name: 'chapter-list', component: ChapterList, props: true },
       { path: '/message', name: 'message', component: Message },
       { path: '/correction', name: 'correction', component: Correction },
       { path: '/borrow', name: 'borrow', component: Borrow },
