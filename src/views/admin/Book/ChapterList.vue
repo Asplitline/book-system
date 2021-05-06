@@ -24,9 +24,9 @@
           </el-table-column>
           <el-table-column min-width="100" label="操作">
             <template slot-scope="{row}">
-              <el-link type="primary" :underline="false" @click="showDrawer(2,row)">
+              <!-- <el-link type="primary" :underline="false" @click="showDrawer(2,row)">
                 查看章节
-              </el-link>
+              </el-link> -->
               <el-link type="success" :underline="false" @click="showDrawer(1,row)">
                 修改章节
               </el-link>

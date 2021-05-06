@@ -26,6 +26,7 @@ const Log = () => import(/* webpackChunkName:'a-log' */'@views/admin/Log')
 // admin -
 const ChapterList = () => import(/* webpackChunkName:'a-chapter-list' */'@views/admin/Book/ChapterList')
 
+// notes push
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push (location) {
   return originalPush.call(this, location).catch(err => err)
@@ -90,7 +91,6 @@ router.beforeEach((to, from, next) => {
     if (path === 'login') {
       next(from.path)
       // ques next(false) invalid
-      // next(false)
     } else {
       if (user.level !== 1 && aMiniMenu.includes(path)) {
         next(from.path)
